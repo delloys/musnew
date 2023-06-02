@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>Библиотека</title>
+    {% endblock %}
+</head>
+<body>
+
+
+{% block content %}
+<div class="container py-5">
+    <a class="btn btn-outline-primary me-2" href="{% url 'add_book' %}">Добавить</a>
+   <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Номер</th>
+          <th scope="col">Авторы</th>
+          <th scope="col">Название</th>
+          <th scope="col">Том</th>
+          <th scope="col">Год издания</th>
+          <th scope="col">Тэги</th>
+          <th scope="col">Тип</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for book in all_books %}
+            <tr onclick="location.href='book/{{book.0}}'" style="cursor:pointer">
+              <td>{{book.0}}</td>
+              <td>{{book.1}}</td>
+              <td>{{book.2}}</td>
+              <td>{{book.3}}</td>
+              <td>{{book.4}}</td>
+              <td>{{book.5}}</td>
+              <td>{{book.6}}</td>
+            </tr>
+      {% endfor %}
+      </tbody>
+   </table>
+{% endblock %}
+</div>
+</body>
