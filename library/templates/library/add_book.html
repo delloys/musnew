@@ -1,66 +1,57 @@
 {% extends 'base.html' %}
 <head>
     <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-
-
+    {% block extrahead %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{ form.media.css }}
+    {% endblock %}
 </head>
 
 <body>
     {% block content %}
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    {{ form.media.js }}
 
-     <script>
-        const myModalEl = document.getElementById('AddTagModal')
-        myModalEl.addEventListener('hidden.bs.modal', event => {
-          console.log("Просто вывод информации");
-        })
+    <script>
+        $(document).ready(function() {
+            $('.django-select2').select2({
+                tags: true,
+                tokenSeparators: [',']
+            });
+        });
     </script>
-    <form>
-        <input type='hidden' name='add_tag'>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTagModal" value="CHECK_ME" name="hidden">
-            Launch demo modal
-        </button>
-    </form>
-    <!-- Modal -->
-    <div class="modal fade" id="AddTagModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form action="" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
-              {{formTag.as_p}}
-              <input type="hidden" name="new_type" value="pip">
-              <button type="submit" class="btn btn-primary profile-button">Сохранить</button>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <script>
 
+        function get_selected() {
+            let form = document.getElementsByName('my-form')[0];
+            let articles = form.getElementsByClassName('select2-selection__choice__display');
+
+            for( let i = 0; i < articles.length; i++){
+                if (document.getElementById("tags_requested") !== null) {
+                    let element = document.getElementById("tags_requested");
+                    element.remove();
+                }
+                var text = [text, articles[i].innerText].join(';');
+              }
+              var x = document.createElement("input");
+                x.setAttribute("type", "hidden");
+                x.setAttribute("name", "tags");
+                x.setAttribute("value", text);
+                x.setAttribute("id", "tags_requested");
+                document.getElementById("own_form").appendChild(x);
+        }
+    </script>
       <div class="container py-5">
         <h1>Заполните поля</h1>
-        <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+        <form method="POST" name="my-form" id="own_form" class="post-form" enctype="multipart/form-data">{% csrf_token %}
             {{ formAuthor.as_p }}
             {{ formBook.as_p }}
             {{ formBookTag.as_p }}
-            <a class="btn btn-outline-primary me-2" href="{% url 'add_tag' %}" target="popup" onclick="window.open('../add_tag.html', '_blank');">Добавить</a>
-            <a class="btn btn-outline-primary me-2" onclick="window.open('{% url 'add_tag' %}','name','width=600,height=400')">Открыть страницу в новом окне</a>
             {{ formCopy.as_p }}
             {{ formStorage.as_p }}
             <button type="submit" class="btn btn-primary profile-button">Сохранить</button>
         </form>
       </div>
-
-
     {% endblock %}
 </body>

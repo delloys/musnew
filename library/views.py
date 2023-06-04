@@ -10,17 +10,6 @@ from django.forms import formset_factory,inlineformset_factory
 from library.forms import *
 from library.models import Book,BookTag,BookAuthor,Author,Tag,Type,Storage
 
-
-def add_tag(request):
-    if request.method == "POST":
-        formTag = TagForm(request.POST)
-        if formTag.is_valid():
-            formTag.save()
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    else:
-        formTag = TagForm()
-    return render(request, 'library/add_tag.html', {'formTag': formTag})
-
 def get_book_detail(pk):
     with connection.cursor() as cursor:
         cursor.execute('''
@@ -30,9 +19,10 @@ def get_book_detail(pk):
                 LEFT JOIN book_author ON author.id=book_author.author_id 
                 GROUP BY book_id),
              get_tag(ID_Book, ID_Tag, tag_book)
-            AS(SELECT book_id,tag_id,tag 
-                   FROM book_tag 
-                LEFT JOIN tag ON book_tag.tag_id=tag.id),
+            AS(SELECT book_id,GROUP_CONCAT(tag_id),GROUP_CONCAT(tag) 
+                    FROM book_tag 
+                    LEFT JOIN tag ON book_tag.tag_id=tag.id
+	            GROUP BY book_id),
              get_storage(ID_Storage,ID_Book,link,mesto)
             AS(SELECT id,book_id,link, CONCAT_WS(" ",closet,shelf) FROM storage)
         
@@ -41,7 +31,7 @@ def get_book_detail(pk):
             name_book AS 'Название',
             part AS 'Том',
             year AS 'Год Издания',
-            ID_Tag AS 'Тэг',
+            tag_book AS 'Тэг',
             type AS 'Тип',
             annotation AS 'Аннотация',
             note AS 'Заметки',
@@ -58,16 +48,20 @@ def get_book_detail(pk):
         row = cursor.fetchone()
     return row
 
+def edit_book(request, pk):
+    book = get_book_detail(pk)
+    return render(request, 'library/edit_book.html', {'book': book})
+
 #Информация об одной книге
 def detail_book(request,pk):
     #book = get_object_or_404(Book, pk=pk)
     book = get_book_detail(pk)
-    print(book[0])
     return render(request, 'library/book_detail.html', {'book': book})
 
 #Добавление книги
 def add_book(request):
     if request.method == 'POST':
+        tag = request.POST.get('tags')
         formBook = BookForm(request.POST)
         formAuthor = AuthorForm(request.POST)
         formBookAuthor = BookAuthorForm()
@@ -96,18 +90,20 @@ def add_book(request):
                 copy = formCopy.save(commit=False)
                 copy.book_id = book.id
                 copy.save()
-            print('AAAAAAAAAAA',formStorage.is_valid() )
             if formStorage.is_valid():
                 storage = formStorage.save(commit=False)
                 storage.user_id = request.user.id
                 storage.book_id = book.id
                 storage.date_rec = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                 storage.save()
-            if formBookTag.is_valid():
-                formBookTag = formBookTag.save(commit = False)
-                print(formBookTag.tag,'boktag')
-                formBookTag.book_id = book.id
-                formBookTag.save()
+            if tag is not None:
+                splitTags = tag[1:].split(';')
+                for i in range(len(splitTags)):
+                    tag_get, created = Tag.objects.get_or_create(tag=splitTags[i])
+                    set_bookTag = BookTag()
+                    set_bookTag.book_id = book.id
+                    set_bookTag.tag_id = tag_get.id
+                    set_bookTag.save()
         return redirect('/')
     else:
         formBook = BookForm()
@@ -158,5 +154,4 @@ def grouped_tags_for_book():
 
 def info_about_books(request):
     all_books = all_info_about_books()
-    print(all_info_about_books())
     return render(request, 'library/info_about_books.html', {'all_books': all_books})

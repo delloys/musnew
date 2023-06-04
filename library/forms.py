@@ -3,13 +3,14 @@ from django.forms.models import BaseInlineFormSet
 from django import forms
 from django.contrib.admin import site, widgets
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 
-from django.forms import ModelForm, Textarea
+from django_select2.forms import Select2Widget, Select2MultipleWidget
+from django.forms import ModelForm, Textarea,CheckboxSelectMultiple,RadioSelect,ModelMultipleChoiceField
 from library.models import *
 from django.forms import formset_factory,inlineformset_factory
 
 #BookFormset = inlineformset_factory(Book,BookAuthor,fields = '__all__')
-
 
 class BookForm(forms.ModelForm):
 
@@ -35,16 +36,8 @@ class BookAuthorForm(forms.ModelForm):
             'author': forms.TextInput(attrs={'class': 'form-control'})
         }
 
-class BookTagForm(forms.ModelForm):
-
-    class Meta:
-        model = BookTag
-        fields = ('tag',)
-        labels = {'tag': 'Тэг'}
-        widgets = {
-            'tag':forms.Select(attrs={'class': 'form-control', 'multiple': 'multiple','size':'3'})
-        }
-
+class BookTagForm(forms.Form):
+    tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=Select2MultipleWidget(attrs={"class": 'form-control',"onchange":"get_selected();"}),required=False)
 
 class StorageForm(forms.ModelForm):
 
@@ -57,11 +50,6 @@ class StorageForm(forms.ModelForm):
             'shelf': forms.TextInput(attrs={'class': 'form-control'}),
             'link': forms.URLInput(attrs={'class': 'form-control'}),
         }
-
-def add_related_field_wrapper(form, col_name):
-        rel_model = form.Meta.model
-        rel = rel_model._meta.get_field(col_name).rel
-        form.fields[col_name].widget = widgets.RelatedFieldWidgetWrapper(form.fields[col_name].widget, rel, admin.site, can_add_related=True, can_change_related=True)
 
 class TagForm(forms.ModelForm):
 
