@@ -2,11 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    {% block extrahead %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{ form.media.css }}
+    {% endblock %}
 </head>
 <body>
   {% block content %}
-    ЯУ МЯУ
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    {{ form.media.js }}
+     <script>
+        $(document).ready(function() {
+            $('.django-select2').select2({
+                tags: true,
+                tokenSeparators: [',']
+            });
+        });
+    </script>
+    <script>
+        $(".js-example-tags").select2({
+          tags: true
+        });
+    </script>
+    <script>
+        function get_selected(div_name, requested_name, name, class_name) {
+            let form = document.getElementById(div_name);
+            let articles = form.getElementsByClassName(class_name);
+
+            for( let i = 0; i < articles.length; i++){
+                if (document.getElementById(requested_name) !== null) {
+                    let element = document.getElementById(requested_name);
+                    element.remove();
+                }
+                var text = [text, articles[i].innerText].join(';');
+              }
+              var x = document.createElement("input");
+                x.setAttribute("type", "hidden");
+                x.setAttribute("name", name);
+                x.setAttribute("value", text);
+                x.setAttribute("id", requested_name);
+                document.getElementById("own_form").appendChild(x);
+        }
+    </script>
+
+     <div class="container py-5">
+        <h1>Заполните поля</h1>
+        <form method="POST" name="my-form" id="own_form" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+            <div id="author_div">
+                {{ formAuthor.as_p }}
+            </div>
+            {{ formBook.as_p }}
+            <div id="type_div">
+                {{ formType.as_p }}
+            </div>
+            <div id="tag_div">
+                {{ formBookTag.as_p }}
+            </div>
+            {{ formCopy.as_p }}
+            {{ formStorage.as_p }}
+            <button type="submit" class="btn btn-primary profile-button">Сохранить</button>
+        </form>
+      </div>
   {% endblock %}
 </body>
 </html>

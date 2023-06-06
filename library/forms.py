@@ -16,28 +16,38 @@ class BookForm(forms.ModelForm):
 
     class Meta:
         content = forms.CharField(widget=forms.Textarea)
+
         model = Book
-        fields = ('name_book','annotation','note','type')
-        labels = {'name_book':'Название', 'annotation': 'Аннотация', 'note': 'Примечание', 'type': 'Тип'}
+        fields = ('name_book','annotation','note')
+        labels = {'name_book':'Название', 'annotation': 'Аннотация', 'note': 'Примечание'}
         widgets = {
             'name_book': forms.TextInput(attrs={'class': 'form-control'}),
             'annotation': Textarea(attrs={'class': 'form-control','cols': 15, 'rows': 10}),
             'note': forms.TextInput(attrs={'class': 'form-control'}),
-            'type': forms.Select(attrs={'class': 'form-control'})
+
         }
 
-class BookAuthorForm(forms.ModelForm):
+
+class TypeForm(forms.ModelForm):
 
     class Meta:
-        model = BookAuthor
-        fields = ('author',)
-        labels = {'author': 'Автор'}
+        model = Book
+        fields = ('type',)
+        labels = {'type':'Тип'}
         widgets = {
-            'author': forms.TextInput(attrs={'class': 'form-control'})
+            'type': Select2Widget(attrs={"class": 'form-control',"onchange":"get_selected('type_div','type_requested','types','select2-selection__rendered');"})
         }
-
 class BookTagForm(forms.Form):
-    tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=Select2MultipleWidget(attrs={"class": 'form-control',"onchange":"get_selected();"}),required=False)
+    tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=Select2MultipleWidget(attrs={"class": 'form-control',"onchange":"get_selected('tag_div','tags_requested','tags','select2-selection__choice__display');"}),required=False,label='Тэг')
+
+class AuthorBookForm(forms.Form):
+    author = forms.ModelMultipleChoiceField(queryset=Author.objects.all(), widget=Select2MultipleWidget(attrs={"class": 'form-control',"onchange":"get_selected('author_div','author_requested','authors','select2-selection__choice__display');"}),required=False,label='Автор')
+
+class UploadFileForm(forms.ModelForm):
+
+    class Meta:
+        model = ExcelImport
+        fields = ('file_excel',)
 
 class StorageForm(forms.ModelForm):
 
@@ -51,39 +61,18 @@ class StorageForm(forms.ModelForm):
             'link': forms.URLInput(attrs={'class': 'form-control'}),
         }
 
-class TagForm(forms.ModelForm):
-
-    class Meta:
-        model = Tag
-        fields = '__all__'
-
-
-class TypeForm(forms.ModelForm):
-
-    class Meta:
-        model = Type
-        fields = '__all__'
-
-class AuthorForm(forms.ModelForm):
-
-    class Meta:
-        model = Author
-        fields = ('name',)
-        labels = {'name': 'Автор'}
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'})
-        }
 
 class CopyForm(forms.ModelForm):
 
     class Meta:
         model = Copy
-        fields = ('year','part','release')
-        labels = {'year': 'Год издания', 'part':'Часть', 'release': 'Выпуск'}
+        fields = ('year','part','release','receipt_date')
+        labels = {'year': 'Год издания', 'part':'Часть', 'release': 'Выпуск','receipt_date':'Дата поступления'}
         widgets = {
             'year': forms.TextInput(attrs={'class': 'form-control'}),
             'part': forms.TextInput(attrs={'class': 'form-control'}),
-            'release': forms.TextInput(attrs={'class': 'form-control'})
+            'release': forms.TextInput(attrs={'class': 'form-control'}),
+            'receipt_date':forms.DateInput(attrs={'class': 'form-control','type':'date'})
         }
 
 

@@ -22,32 +22,43 @@
         });
     </script>
     <script>
-
-        function get_selected() {
-            let form = document.getElementsByName('my-form')[0];
-            let articles = form.getElementsByClassName('select2-selection__choice__display');
+        $(".js-example-tags").select2({
+          tags: true
+        });
+    </script>
+    <script>
+        function get_selected(div_name, requested_name, name, class_name) {
+            let form = document.getElementById(div_name);
+            let articles = form.getElementsByClassName(class_name);
 
             for( let i = 0; i < articles.length; i++){
-                if (document.getElementById("tags_requested") !== null) {
-                    let element = document.getElementById("tags_requested");
+                if (document.getElementById(requested_name) !== null) {
+                    let element = document.getElementById(requested_name);
                     element.remove();
                 }
                 var text = [text, articles[i].innerText].join(';');
               }
               var x = document.createElement("input");
                 x.setAttribute("type", "hidden");
-                x.setAttribute("name", "tags");
+                x.setAttribute("name", name);
                 x.setAttribute("value", text);
-                x.setAttribute("id", "tags_requested");
+                x.setAttribute("id", requested_name);
                 document.getElementById("own_form").appendChild(x);
         }
     </script>
       <div class="container py-5">
         <h1>Заполните поля</h1>
         <form method="POST" name="my-form" id="own_form" class="post-form" enctype="multipart/form-data">{% csrf_token %}
-            {{ formAuthor.as_p }}
+            <div id="author_div">
+                {{ formAuthor.as_p }}
+            </div>
             {{ formBook.as_p }}
-            {{ formBookTag.as_p }}
+            <div id="type_div">
+                {{ formType.as_p }}
+            </div>
+            <div id="tag_div">
+                {{ formBookTag.as_p }}
+            </div>
             {{ formCopy.as_p }}
             {{ formStorage.as_p }}
             <button type="submit" class="btn btn-primary profile-button">Сохранить</button>

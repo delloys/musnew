@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% block content %}
+ <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-primary profile-button">Сохранить</button>
+ </form>
+{% endblock %}
+</body>
+</html>

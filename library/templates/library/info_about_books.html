@@ -1,18 +1,41 @@
 {% extends 'base.html' %}
 <head>
     <meta charset="UTF-8">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     {% block title %}
         <title>Библиотека</title>
     {% endblock %}
+
 </head>
 <body>
 
 
 {% block content %}
-<div class="container py-5">
+    <script>
+      $(document).ready(function() {
+        $('#info-table').DataTable({
+            language: {url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json',}
+        });
+      });
+    </script>
+    <script>
+    setTimeout(function(){
+            document.getElementById('message').style.display = 'none';
+        }, 5000);
+    </script>
+<div class="container py-5" >
     <a class="btn btn-outline-primary me-2" href="{% url 'add_book' %}">Добавить</a>
-   <table class="table table-hover">
-      <thead>
+    <a class="btn btn-outline-primary me-2" href="{% url 'upload_file' %}">Импортировать</a>
+    <hr>
+    {% if messages %}
+    <div id="message" class="alert alert-success">
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+   <table class="table table-hover" id="info-table">
+      <thead onclick="getSort(event)">
         <tr>
           <th scope="col">Номер</th>
           <th scope="col">Авторы</th>
