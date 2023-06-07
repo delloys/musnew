@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Добавление культуры и исторического периода</title>
+</head>
+<body>
+<script>
+function goBack() {
+  var url = "{% url 'add_artefact' %}";
+  window.location.href = url;
+}
+</script>
+<h1>Добавление культуры и исторического периода</h1>
+<!--Форма добавления культуры-->
+<form method="post">
+  {% csrf_token %}
+
+  <h2>Добавление зала</h2>
+    <p>Зал: {{ hall_form.name_hall}}</p>
+
+  <button type="submit" name="save_hall" class="btn btn-outline-primary btn-sm">Сохранить зал</button>
+</form>
+<!--Форма добавления исторического периода-->
+<form method="post">
+  {% csrf_token %}
+
+  <h2>Добавление месторасположения</h2>
+
+    <p>Месторасположение: {{ place_form.name_place}}</p>
+
+  <button type="submit" name="save_place" class="btn btn-outline-primary btn-sm">Сохранить место</button>
+</form>
+<!--Форма добавления связи между культурой и историческим периодом-->
+<form method="post">
+  {% csrf_token %}
+
+  <h2>Добавление связи между залом и месторасположением</h2>
+
+    <p>Зал: {{ hp_form.name_hall}}</p>
+    <p>Месторасположение: {{ hp_form.name_place}}</p>
+  <button type="submit" name="save_hp" class="btn btn-outline-primary btn-sm">Сохранить связь между залом и местом</button>
+   <button type="button" onclick="goBack()" class="btn btn-outline-primary btn-sm">Назад</button>
+</form>
+</body>
+</html>

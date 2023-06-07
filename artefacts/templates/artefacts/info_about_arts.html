@@ -1,10 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/artefacts.css">
+    {% block title %}
+        <title>Основные фонды</title>
+    {% endblock %}
+
 </head>
 <body>
+
+    {% block content %}
+    <script>
+      $(document).ready(function() {
+        $('#info-table').DataTable({
+            language: {url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json'},
+        searching: false, // отключает поиск
+        ordering: true, // включает сортировку
+        paging: true, // включает пагинацию
+           columnDefs: [
+      { type: 'num', targets: 0 } // указываем, что первый столбец должен быть отсортирован как числа
+    ]
+        });
+      });
+    </script>
+    <script>
+    setTimeout(function(){
+            document.getElementById('message').style.display = 'none';
+        }, 5000);
+    </script>
+<!--   Тест окна -->
+ <div class="container py-5" >
+     <h4>Поиск</h4>
+     <form method="get">
+    <input type="text" name="museum" placeholder="Музей">
+    <input type="text" name="ex_monument" placeholder="Название памятника">
+    <input type="text" name="year" placeholder="Дата раскопок">
+    <input type="text" name="uniq_name" placeholder="Уникальный шифр">
+    <input type="text" name="name" placeholder="Название предмета">
+    <input type="text" name="ex_lead" placeholder="Руководитель ">
+    <button type="submit" class="btn btn-outline-primary btn-sm">Искать</button>
+</form>
+     <hr>
+    <p><a class="btn btn-outline-primary me-2" href="{% url 'add_artefact' %}">Добавить артефакт</a></p>
+    <hr>
+    {% if messages %}
+    <div id="message" class="alert alert-success">
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+   <table class="table table-hover" id="info-table">
+      <thead onclick="getSort(event)">
+        <tr>
+        <th>№</th>
+        <th>Музей</th>
+        <th>Название памятника</th>
+        <th>Дата раскопок</th>
+        <th>Уникальный шифр</th>
+        <th>Название предмета</th>
+        <th>Руководитель экспедиции</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for artefact in artefacts %}
+      <tr {% url 'artefact_detail' artefact.pk as artefact_url %}<a onclick="location.href='{{ artefact_url }}'" style="cursor:pointer">{{ artefact.name }}</a>
+        <td>{{ artefact.number}} </td>
+        <td>{{ artefact.museum }}</td>
+        <td>{{ artefact.ex_monument }}</td>
+        <td>{{ artefact.year }}</td>
+        <td>{{ artefact.uniq_name }}</td>
+        <td> {{ artefact.name_art }}</td>
+        <td>{{ artefact.ex_lead }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+ </div>
+
+    {% endblock %}
 
 </body>
 </html>

@@ -1,5 +1,7 @@
+import os
 from django.conf import settings
 from django.db import models
+from django.utils.deconstruct import deconstructible
 
 
 # Create your models here.
@@ -11,7 +13,6 @@ class Museum(models.Model):
 
     def __str__(self):
         return self.name_mus
-
 
 class Ex_monument(models.Model):
     name_ex = models.CharField(max_length=255)
@@ -30,7 +31,7 @@ class Year_monument(models.Model):
         db_table = 'year_monument'
 
     def __str__(self):
-        return str(self.year)
+        return self.year.strftime('%d.%m.%Y')
 
 
 class Material(models.Model):
@@ -103,7 +104,7 @@ class HallPlace(models.Model):
         return f"{self.name_hall.name_hall} - {self.name_place.name_place}"
 
 
-class HisotoricalCulture(models.Model):
+class HistoricalCulture(models.Model):
     name_cult = models.ForeignKey(Culture, on_delete=models.CASCADE, related_name='hc_id_cult')
     name_hist = models.ForeignKey(Historical_period, on_delete=models.CASCADE, related_name='hc_id_hist')
 
@@ -113,25 +114,49 @@ class HisotoricalCulture(models.Model):
     def __str__(self):
         return f"{self.name_cult.name_cult} - {self.name_hist.name_hist}"
 
+@deconstructible
+class UploadToPathAndRename(object):
+    def __init__(self, path):
+        self.sub_path = path
 
+    def __call__(self, instance, filename):
+        ext = os.path.splitext(filename)[1]
+        filename = '{}{}'.format(instance.uniq_name, ext)
+        return os.path.join(self.sub_path, filename)
 class Artefact(models.Model):
     museum = models.ForeignKey(Museum, on_delete=models.CASCADE, related_name='id_museum')
     ex_monument = models.ForeignKey(Ex_monument, on_delete=models.CASCADE, related_name='id_ex_monument')
     year = models.ForeignKey(Year_monument, on_delete=models.CASCADE, related_name='id_year')
     uniq_name = models.CharField(max_length=255, unique=True)
+    number = models.PositiveBigIntegerField(unique=True)
+    name_art = models.CharField(max_length=255, null=True)
     material = models.ForeignKey(Material, blank=True, null=True, on_delete=models.CASCADE, related_name='id_material')
-    histcult = models.ForeignKey(HisotoricalCulture, blank=True, null=True, on_delete=models.CASCADE, related_name='id_hist_cult')
+    histcult = models.ForeignKey(HistoricalCulture, blank=True, null=True, on_delete=models.CASCADE, related_name='id_hist_cult')
     age = models.PositiveBigIntegerField(blank=True, null=True)
     size = models.CharField(max_length=20, blank=True, null=True)
     ex_lead = models.ForeignKey(Ex_lead, on_delete=models.CASCADE, related_name='id_lead_ex')
     location = models.ForeignKey(HallPlace, on_delete=models.CASCADE, related_name='id_hall_place')
     description = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
-    image = models.ImageField(blank=True, null=True, upload_to='images/')
+    image = models.ImageField(blank=True, null=True, upload_to=UploadToPathAndRename('images/'))
     user_last_changes = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'artefact'
+        get_latest_by = 'last_modified'
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) +" | " + str(self.uniq_name)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            # создание нового объекта
+            if self.image:
+                self.image.name = '{}{}'.format(self.uniq_name, os.path.splitext(self.image.name)[1])
+        else:
+            # обновление существующего объекта
+            old_obj = Artefact.objects.get(pk=self.pk)
+            if old_obj.image.name != self.image.name:
+                self.image.name = '{}{}'.format(self.uniq_name, os.path.splitext(self.image.name)[1])
+        super(Artefact, self).save(*args, **kwargs)

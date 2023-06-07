@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+<head>
+    <meta charset="UTF-8">
+    {% block extrahead %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{ form.media.css }}
+    {% endblock %}
+</head>
+
+<body>
+{% block content %}
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    {{ form.media.js }}
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+{{ form.media.js }}
+<script>$(document).ready(function() {
+    $('#id_museum, #id_ex_monument, #id_year, #id_material, #id_histcult, #id_location, #id_ex_lead').select2();
+});
+</script>
+<script>
+    $(document).ready(function() {
+        $('.django-select2').select2({
+            tags: true,
+        });
+    });
+</script>
+<script>
+function goBack() {
+  var url = "{% url 'info_about_arts' %}";
+  window.location.href = url;
+}
+</script>
+<style>
+    p.form-field {
+  margin-bottom: 8px;
+}
+</style>
+<div class="container py-5">
+<h1>Добавить артефакт:</h1>
+<hr>
+<form method="POST" action="{% url 'add_artefact' %}" class="post-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="id_museum">
+            <p class="form-field">Музей: {{ form.museum }}
+                <a href="{% url 'add_museum' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+        </div>
+         <div >
+       <p class="form-field">Музейный номер: {{ form.number }}</p>
+      </div>
+      <div class="id_ex_monument">
+       <p class="form-field">Название памятника: {{ form.ex_monument }}
+        <a href="{% url 'add_ex_monument' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+      </div>
+      <div class="id_year">
+        <p class="form-field">Год раскопок: {{ form.year }}
+        <a href="{% url 'add_year' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+      </div>
+      <div>
+        <p class="form-field"> Уникальный шифр: {{ form.uniq_name }}</p>
+      </div>
+      <div>
+        <p class="form-field">Название предмета: {{ form.name_art }} </p>
+      </div>
+        <div class="id_material">
+        <p class="form-field">Материал: {{ form.material }}
+        <a href="{% url 'add_material' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a> </p>
+      </div>
+      <div class="id_histcult">
+        <p class="form-field"> Исторический период и культура: {{ form.histcult }}
+        <a href="{% url 'add_hist_cult' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+      </div>
+      <div >
+        <p class="form-field"> Абсолютный возраст: {{ form.age }}</p>
+      </div>
+      <div >
+        <p class="form-field">Размер предмета: {{ form.size }} </p>
+      </div>
+      <div class="id_location">
+        <p class="form-field">Расположение: {{ form.location }}
+        <a href="{% url 'add_hall_place' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a> </p>
+      </div>
+      <div class="id_ex_lead">
+          <p>Руководитель раскопок:{{ form.ex_lead }}
+        <a href="{% url 'add_ex_lead' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+      </div>
+       <div>
+       <p class="form-field">Примечание:</p>  {{ form.note }}
+      </div>
+      <div>
+          <p class="form-field">Описание:</p> {{ form.description }}
+      </div>
+      <div>
+          <p class="form-field">Изображение: {{ form.image }}</p>
+      </div>
+    <hr>
+  <button type="submit" class="btn btn-outline-primary me-2" value="Добавить">Добавить</button>
+    <button onclick="goBack()" class="btn btn-outline-primary me-2">Отмена</button>
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      {% for field in form %}
+        {% if field.errors %}
+          <ul>
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</form>
+</div>
+{% endblock %}
+</body>

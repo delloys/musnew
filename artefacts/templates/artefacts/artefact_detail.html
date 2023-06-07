@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>{{ artefact.uniq_name }}</title>
+    {% endblock %}
+</head>
+
+<body>
+{% block content %}
+<div class="container py-5">
+<h1>Карточка артефакта: {{ artefact.uniq_name }}</h1>
+<hr>
+<a href="{% url 'edit_artefact' pk=artefact.pk %}" class="btn btn-outline-primary">Редактировать</a>
+<hr><div class="parent">
+
+  <div class="column-wrapper">
+    <div class="column-1">
+        <div class="column-content">
+            <p><strong>Музейный номер:</strong> {{ artefact.museum }} | {{ artefact.number}}</p>
+            <p><strong>Название памятника:</strong> {{ artefact.ex_monument }}</p>
+            <p><strong>Год раскопок:</strong> {{ artefact.year }}</p>
+            <p><strong>Уникальный шифр предмета:</strong> {{ artefact.uniq_name }}</p>
+            <p><strong>Название предмета:</strong> {{ artefact.name_art }}</p>
+            {% if artefact.material %}
+                <p><strong>Материал:</strong> {{ artefact.material }}</p>
+            {% else %}
+            <p><strong>Материал:</strong> - </p>
+            {% endif %}
+            {% if artefact.histcult %}
+                <p><strong>Исторический период:</strong> {{ artefact.histcult }}</p>
+            {% else %}
+            <p><strong>Исторический период:</strong> - </p>
+            {% endif %}
+            {% if artefact.age %}
+                <p><strong>Абсолютный возраст:</strong> {{ artefact.age }}</p>
+            {% else %}
+            <p><strong>Абсолютный возраст:</strong> - </p>
+            {% endif %}
+             {% if artefact.size %}
+                <p><strong>Размер предмета:</strong> {{ artefact.size }}</p>
+            {% else %}
+            <p><strong>Размер предмета:</strong> - </p>
+            {% endif %}
+            <p><strong>Руководитель раскопок:</strong> {{ artefact.ex_lead }}</p>
+            <p><strong>Примечание:</strong>
+                <div class="description"> {{ artefact.note }} </div></p>
+        </div>
+    </div>
+<div class="column-2">
+    <div class="column-content">
+         {% if artefact.image %}
+  <p><strong>Изображение:</strong></p>
+  <p><img src="../../static/{{ artefact.image }}" height="166" width="262"/></p>
+{% endif %}
+<p><strong>Описание:</strong> <div class="description">{{ artefact.description }}</div></p>
+<p><strong>Расположение:</strong> {{ artefact.location }}</p>
+        <p><strong>Дата последнего изменения:</strong> <div class="description">{{ artefact.last_modified.date }} </div></p>
+{% if artefact.user_last_changes %}
+        <p><strong>Автор последнего изменения:</strong> <div class="description">{{ artefact.user_last_changes.first_name }} {{ artefact.user_last_changes.last_name }}</div></p>
+{% endif %}
+    </div>
+    </div>
+  </div>
+</div>
+<hr>
+<a href="{% url 'info_about_arts' %}" class="btn btn-outline-primary">Закрыть окно</a>
+</div>
+{% endblock %}
+</body>
+</html>
