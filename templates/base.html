@@ -43,7 +43,7 @@
 
       <ul class="nav nav-pills">
           {% if user.is_authenticated %}
-            <li><a  class="nav-link px-2 link-secondary">Здравствуйте, <b>{{ user.first_name }}{{ user.last_name }}</b>!</a></li>
+            <li><a  class="nav-link px-2 link-secondary">Здравствуйте, <b>{{ user.first_name }} {{ user.last_name }}</b>!</a></li>
           {% endif %}
         <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Артефакты</a></li>
         <li class="nav-item"><a href="#" class="nav-link">Библиотека</a></li>

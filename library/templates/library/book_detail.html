@@ -10,6 +10,18 @@
 </head>
 <body>
     {% block content %}
+
+    <script>
+      $(document).ready(function() {
+        $('#copy-button').click(function() {
+          var text = $('#link_text').text();
+          var input = $('<textarea>').val(text).appendTo('body').select();
+          document.execCommand('copy');
+          input.remove();
+        });
+      });
+    </script>
+
     <div class="container py-5">
         <div class="card mb-4">
           <div class="card-header">
@@ -102,7 +114,22 @@
                 <p class="mb-0">Ссылка:</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0"><a href="{{book.10}}">{{book.11}}</a></p>
+                    <div class="row">
+                      <div class="col" id="link_text">
+                          {{book.11}}
+                      </div>
+                      <div class="col">
+                          </div>
+                      <div class="col">
+                          </div>
+                      <div class="col">
+                          </div>
+                      <div class="col">
+                          </div>
+                      <div class="col">
+                          <button class="btn btn-primary" id="copy-button" onclick="getCopy()" >Копировать</button>
+                      </div>
+                </div>
               </div>
             </div>
             <hr>

@@ -4,6 +4,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 import pandas as pd
 import numpy as np
 import math
+from django.utils import timezone
 
 from time import gmtime, strftime
 from django.contrib import messages
@@ -163,7 +164,7 @@ def upload_file(request):
                     book_Storage.closet = books_df.at[i,'Шкаф']
                     book_Storage.shelf = books_df.at[i,'Полка']
                     book_Storage.user_id = request.user.id
-                    book_Storage.last_modified_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                    book_Storage.last_modified_time = timezone.now()
                     book_Storage.save()
                     book_Copy = Copy()
                     if "-" not in str(books_df.at[i,'Год издания']):
@@ -237,15 +238,15 @@ def get_book_detail(pk):
             SELECT book.id AS 'Номер',
             authors_name AS 'Авторы',
             name_book AS 'Название',
-            part AS 'Том',
-            year AS 'Год Издания',
+            IFNULL(part,'-') AS 'Том',
+            IFNULL(year,'-') AS 'Год Издания',
             last_modified_time AS 'Последние изменения',
-            tag_book AS 'Тэг',
-            type AS 'Тип',
-            annotation AS 'Аннотация',
-            note AS 'Заметки',
-            mesto AS 'Расположение',
-            link AS 'Ссылка',
+            IFNULL(tag_book,'-') AS 'Тэг',
+            IFNULL(type,'-') AS 'Тип',
+            IFNULL(annotation,'-') AS 'Аннотация',
+            IFNULL(note,'-') AS 'Заметки',
+            IFNULL(mesto,'-') AS 'Расположение',
+            IFNULL(link,'-') AS 'Ссылка',
             receipt_date AS 'Дата поступления',
             username AS 'Пользователь'
             FROM book
@@ -321,7 +322,7 @@ def edit_book(request, pk):
             storage.closet = bookStorage.closet
             storage.shelf = bookStorage.shelf
             storage.link = bookStorage.link
-            storage.last_modified_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+            storage.last_modified_time = timezone.now()
             storage.save()
         messages.success(request, 'Книга успешно изменена.')
         return redirect('/')
@@ -374,7 +375,7 @@ def add_book(request):
                 storage = formStorage.save(commit=False)
                 storage.user_id = request.user.id
                 storage.book_id = book.id
-                storage.last_modified_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                storage.last_modified_time = timezone.now()
                 storage.save()
             if tag is not None:
                 splitTags = tag[1:].split(';')
@@ -412,12 +413,12 @@ def all_info_about_books():
 	     GROUP BY book_id)
 	     
 	     SELECT book.id AS Номер,
-        authors_name AS 'Авторы',
+        IFNULL(authors_name,'-') AS 'Авторы',
         name_book AS 'Название',
-        part AS 'Том',
-        year AS 'Год Издания',
-        tag_book AS 'Тэг',
-        type AS 'Тип'
+        IFNULL(part,'-') AS 'Том',
+        IFNULL(year,'-') AS 'Год Издания',
+        IFNULL(tag_book,'-') AS 'Тэг',
+        IFNULL(type,'-') AS 'Тип'
         FROM book
             LEFT JOIN type ON book.type_id=type.id
             LEFT JOIN get_authors ON book.id=get_authors.ID_Book
@@ -425,8 +426,8 @@ def all_info_about_books():
             LEFT JOIN copy ON book.id=copy.book_id
         ORDER BY book.id;
         ''')
-        row = cursor.fetchall()
-    return row
+        rows = cursor.fetchall()
+    return rows
 
 #Сгурппированные тэги для каждой книги
 def grouped_tags_for_book():

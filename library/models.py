@@ -33,8 +33,8 @@ class Author(models.Model):
 
 class Book(models.Model):
     name_book = models.TextField()
-    annotation = models.TextField(blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
+    annotation = models.TextField(blank=True, null=True,default='-')
+    note = models.TextField(blank=True, null=True,default='-')
     type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='id_type',blank=True, null=True)
 
     class Meta:
@@ -44,10 +44,10 @@ class Book(models.Model):
         return self.name_book
 
 class Storage(models.Model):
-    closet = models.CharField(max_length=20, null=True, blank=True)
-    shelf = models.CharField(max_length=20, blank=True, null=True)
+    closet = models.CharField(max_length=20, null=True, blank=True,default='-')
+    shelf = models.CharField(max_length=20, blank=True, null=True,default='-')
     last_modified_time = models.DateTimeField(blank=True, null=True)
-    link = models.TextField(blank=True, null=True)
+    link = models.TextField(blank=True, null=True,default='-')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='id_type', blank=True, null=True)
 
@@ -91,8 +91,8 @@ class BookTag(models.Model):
 class Copy(models.Model):
     year = models.IntegerField(blank=True, null=True)
     receipt_date = models.DateField(blank=True,null=True)
-    part = models.CharField(max_length=20, blank=True, null=True)
-    release = models.CharField(max_length=20, blank=True, null=True)
+    part = models.CharField(max_length=20, blank=True, null=True,default='-')
+    release = models.CharField(max_length=20, blank=True, null=True,default='-')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='copy_id_book')
 
     class Meta:

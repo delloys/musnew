@@ -58,7 +58,7 @@ class StorageForm(forms.ModelForm):
         widgets = {
             'closet': forms.TextInput(attrs={'class': 'form-control'}),
             'shelf': forms.TextInput(attrs={'class': 'form-control'}),
-            'link': forms.URLInput(attrs={'class': 'form-control'}),
+            'link': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 
