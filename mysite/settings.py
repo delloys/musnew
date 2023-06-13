@@ -76,20 +76,34 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+#to local
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'museumdvfu$info',
+#         'USER': 'museumdvfu',
+#         'PASSWORD': 'dbmuseumdvfu',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         },
+#     }
+# }
+#to pythonanywhere
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'museumdvfu$info',
-        'USER': 'museumdvfu',
-        'PASSWORD': 'dbmuseumdvfu',
-        'HOST': 'localhost',
+        'NAME': 'dvfumuseum$info',
+        'USER': 'dvfumuseum',
+        'PASSWORD': 'museum!Root3',
+        'HOST': 'dvfumuseum.mysql.pythonanywhere-services.com',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
-
 # Password validation
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

@@ -236,8 +236,9 @@ def upload_file(request):
                 #print(files.id,'YTYTY')
                 #print(f.file_excel.name,'popoperop',len(files))
                 #to pythonanywhere use
-                #books_df = parse_file('dvfumuseum.pythonanywhere.com/library/media/' + files.file_excel.name)
-                books_df = parse_file('library/media/' + files.file_excel.name)
+                books_df = parse_file('dvfumuseum.pythonanywhere.com/library/media/' + files.file_excel.name)
+                #to local
+                #books_df = parse_file('library/media/' + files.file_excel.name)
                 for i in range(len(books_df)):
                     book_Model = Book()
                     book_Model.name_book = books_df.at[i,'Название']
