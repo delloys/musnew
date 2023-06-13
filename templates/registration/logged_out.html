@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Logged out!</p>
+<div class="container py-5" ><div class="row">
+    <div class="col">
+        </div>
+     <div class="col">
+        <div class="text-center">
+        <p>Вы вышли из системы.</p>
+            <a href="{% url 'login'%}">Нажмите здесь, чтобы войти снова.</a>
+         </div>
+     </div>
+<div class="col">
+        </div>
+</div>
+</div>
 
-<a href="{% url 'login'%}">Click here to login again.</a>
 {% endblock %}

@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dvfumuseum$info',
-        'USER': 'dvfumuseum',
-        'PASSWORD': 'qwerty2001',
-        'HOST': 'dvfumuseum.mysql.pythonanywhere-services.com',
+        'NAME': 'museumdvfu$info',
+        'USER': 'museumdvfu',
+        'PASSWORD': 'dbmuseumdvfu',
+        'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -118,6 +118,8 @@ LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Asia/Vladivostok'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 

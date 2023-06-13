@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import FileExtensionValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -35,7 +36,7 @@ class Book(models.Model):
     name_book = models.TextField()
     annotation = models.TextField(blank=True, null=True,default='-')
     note = models.TextField(blank=True, null=True,default='-')
-    type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='id_type',blank=True, null=True)
+    type = models.ForeignKey(Type, on_delete=models.SET_NULL, related_name='id_type',blank=True, null=True)
 
     class Meta:
         db_table = 'book'
@@ -46,7 +47,7 @@ class Book(models.Model):
 class Storage(models.Model):
     closet = models.CharField(max_length=20, null=True, blank=True,default='-')
     shelf = models.CharField(max_length=20, blank=True, null=True,default='-')
-    last_modified_time = models.DateTimeField(blank=True, null=True)
+    last_modified_time = models.DateField(blank=True, null=True,auto_now=True)
     link = models.TextField(blank=True, null=True,default='-')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='id_type', blank=True, null=True)
@@ -89,7 +90,7 @@ class BookTag(models.Model):
         return str(self.id)
 
 class Copy(models.Model):
-    year = models.IntegerField(blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True,validators=[MinValueValidator(1500),MaxValueValidator(2100)])
     receipt_date = models.DateField(blank=True,null=True)
     part = models.CharField(max_length=20, blank=True, null=True,default='-')
     release = models.CharField(max_length=20, blank=True, null=True,default='-')

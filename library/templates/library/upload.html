@@ -6,10 +6,21 @@
 </head>
 <body>
 {% block content %}
- <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
-    {{form.as_p}}
-    <button type="submit" class="btn btn-primary profile-button">Сохранить</button>
- </form>
+ <div class="container py-5" ><div class="row">
+    <div class="col">
+        </div>
+     <div class="col">
+        <div class="text-center">
+             <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+                {{form.as_p}}
+                <button type="submit" class="btn btn-primary profile-button">Импортировать</button>
+             </form>
+        </div>
+     </div>
+     <div class="col">
+        </div>
+ </div>
+ </div>
 {% endblock %}
 </body>
 </html>

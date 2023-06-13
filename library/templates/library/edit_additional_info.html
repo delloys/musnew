@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block extrahead %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{ form.media.css }}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+    <script>
+        $(document).ready(function() {
+            $('.django-select2').select2();
+        });
+    </script>
+    <script>
+        function get_selected(div_name, requested_name, name, class_name,form_name) {
+            let form = document.getElementById(div_name);
+            let articles = form.getElementsByClassName(class_name);
+
+            for( let i = 0; i < articles.length; i++){
+                if (document.getElementById(requested_name) !== null) {
+                    let element = document.getElementById(requested_name);
+                    element.remove();
+                }
+                var text = articles[i].innerText;
+              }
+              var x = document.createElement("input");
+                x.setAttribute("type", "hidden");
+                x.setAttribute("name", name);
+                x.setAttribute("value", text);
+                x.setAttribute("id", requested_name);
+                document.getElementById(form_name).appendChild(x);
+        }
+    </script>
+    <div class="container py-5" >
+        {% if post_check == False or check_type_form == False and check_tag_form == False %}
+        <form method="POST" name="my-form" id="author_form" class="post-form" enctype="multipart/form-data"> {% csrf_token %}
+            {% if check_author_form %}
+                {{author_form.as_p}}
+                <input type="hidden" name="render_request" value="True">
+                <input type="hidden" name="id_author" value="{{ author_id.id }}">
+                <button type="submit" class="btn btn-primary profile-button">Сохранить изменения</button>
+                <a class="btn btn-outline-primary me-2" href="{% url 'delete_author' pk=author_id.id %}">Удалить</a>
+            {% else %}
+                <div id="author_div">
+                {{author_edit_form.as_p}}
+                </div>
+
+                <button type="submit" class="btn btn-primary profile-button">Изменить автора</button>
+            {% endif %}
+
+        </form>
+        {% endif %}
+
+        {% if post_check == False or check_author_form == False and check_type_form == False %}
+        <hr>
+        <form method="POST" name="my-form" id="tag_form" class="post-form" enctype="multipart/form-data"> {% csrf_token %}
+            {% if check_tag_form %}
+                {{tag_form.as_p}}
+                <input type="hidden" name="render_request" value="True">
+                <input type="hidden" name="id_tag" value="{{ tag_id.id }}">
+                <button type="submit" class="btn btn-primary profile-button">Сохранить изменения</button>
+                <a class="btn btn-outline-primary me-2" href="{% url 'delete_tag' pk=tag_id.id %}">Удалить</a>
+            {% else %}
+                <div id="tag_div">
+                {{tag_edit_form.as_p}}
+                </div>
+                <button type="submit" id="1" class="btn btn-primary profile-button">Изменить тэг</button>
+            {% endif %}
+        </form>
+        {% endif %}
+
+        {% if post_check == False or check_author_form == False and check_tag_form == False %}
+        <hr>
+        <form method="POST" name="my-form" id="type_form" class="post-form" enctype="multipart/form-data"> {% csrf_token %}
+            {% if check_type_form %}
+                {{type_form.as_p}}
+                <input type="hidden" name="render_request" value="True">
+                <input type="hidden" name="id_type" value="{{ type_id.id }}">
+                <button type="submit" class="btn btn-primary profile-button">Сохранить изменения</button>
+                <a class="btn btn-outline-primary me-2" href="{% url 'delete_type' pk=type_id.id %}">Удалить</a>
+            {% else %}
+                <div id="type_div">
+                {{type_edit_form.as_p}}
+                </div>
+                <button type="submit" class="btn btn-primary profile-button">Изменить тип</button>
+            {% endif %}
+        </form>
+        {% endif %}
+
+    </div>
+{% endblock %}
+</body>
+</html>

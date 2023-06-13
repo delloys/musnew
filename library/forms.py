@@ -12,6 +12,35 @@ from django.forms import formset_factory,inlineformset_factory
 
 #BookFormset = inlineformset_factory(Book,BookAuthor,fields = '__all__')
 
+class AuthorForm(forms.ModelForm):
+
+    class Meta:
+        model = Author
+        fields ={'name',}
+        labels = {'name': 'Автор'}
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+class TagForm(forms.ModelForm):
+
+    class Meta:
+        model = Tag
+        fields = {'tag',}
+        labels = {'tag': 'Тэг'}
+        widgets = {
+            'tag': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+class TypeNewForm(forms.ModelForm):
+
+    class Meta:
+        model = Type
+        fields = {'type',}
+        labels = {'type':'Тип'}
+        widgets = {
+            'type': forms.TextInput(attrs={'class': 'form-control'})
+        }
 class BookForm(forms.ModelForm):
 
     class Meta:
@@ -42,6 +71,15 @@ class BookTagForm(forms.Form):
 
 class AuthorBookForm(forms.Form):
     author = forms.ModelMultipleChoiceField(queryset=Author.objects.all(), widget=Select2MultipleWidget(attrs={"class": 'form-control',"onchange":"get_selected('author_div','author_requested','authors','select2-selection__choice__display');"}),required=False,label='Автор')
+
+class AuthorEditForm(forms.Form):
+    author = forms.ModelChoiceField(queryset=Author.objects.all(),widget=Select2Widget(attrs={"class": 'form-control',"onchange":"get_selected('author_div','author_requested','authors','select2-selection__rendered','author_form');"}),label='Автор')
+
+class TagEditForm(forms.Form):
+    tag = forms.ModelChoiceField(queryset=Tag.objects.all(),widget=Select2Widget(attrs={"class": 'form-control',"onchange":"get_selected('tag_div','tag_requested','tags','select2-selection__rendered','tag_form');"}),label='Тэг')
+
+class TypeEditForm(forms.Form):
+    type = forms.ModelChoiceField(queryset=Type.objects.all(),widget=Select2Widget(attrs={"class": 'form-control',"onchange":"get_selected('type_div','type_requested','types','select2-selection__rendered','type_form');"}),label='Тип')
 
 class UploadFileForm(forms.ModelForm):
 

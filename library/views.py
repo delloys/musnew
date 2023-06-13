@@ -18,6 +18,92 @@ from library.models import Book,BookTag,BookAuthor,Author,Tag,Type,Storage
 from .forms import UploadFileForm
 from dateutil.parser import parse
 
+def help_render(request):
+    return render(request,'library/help.html')
+
+def edit_additional_info(request):
+    if request.method == 'POST':
+        author_edit = request.POST.get('authors')
+        tag_edit = request.POST.get('tags')
+        type_edit = request.POST.get('types')
+
+        author_edit_data = AuthorForm(request.POST)
+        tag_edit_data = TagForm(request.POST)
+        type_edit_data = TypeNewForm(request.POST)
+
+        if author_edit:
+            get_author = Author.objects.get(name=author_edit)
+            author_form = AuthorForm(initial={'name':get_author.name})
+            check_author_form = True
+            author_id = get_object_or_404(Author, name=author_edit)
+        else:
+            author_id = 1
+            author_form = AuthorForm()
+            check_author_form = False
+
+        if tag_edit:
+            get_tag = Tag.objects.get(tag=tag_edit)
+            tag_form = TagForm(initial={'tag':get_tag.tag})
+            check_tag_form = True
+            tag_id = get_object_or_404(Tag, tag=tag_edit)
+        else:
+            tag_id = 1
+            tag_form = TagForm()
+            check_tag_form = False
+
+        if type_edit:
+            get_type = Type.objects.get(type=type_edit)
+            type_form = TypeNewForm(initial={'type':get_type.type})
+            check_type_form = True
+            type_id = get_object_or_404(Type, type=type_edit)
+        else:
+            type_id = 1
+            type_form = TypeNewForm()
+            check_type_form = False
+        post_check = True
+
+        if author_edit_data.is_valid():
+            formAuthor = AuthorForm(request.POST)
+            save_author = formAuthor.save(commit=False)
+            save_author.id = request.POST.get('id_author')
+            save_author.save()
+            messages.success(request, 'Автор успешно изменён.')
+        if tag_edit_data.is_valid():
+            formTag = TagForm(request.POST)
+            save_tag = formTag.save(commit=False)
+            save_tag.id = request.POST.get('id_tag')
+            if save_tag.tag != request.POST.get('id_tag') and request.POST.get('id_tag') is not None :
+                save_tag.save()
+                messages.success(request, 'Тэг успешно изменён.')
+        if type_edit_data.is_valid():
+            save_type = type_edit_data.save(commit=False)
+            save_type.id = request.POST.get('id_type')
+            if save_type.type != request.POST.get('id_type') and request.POST.get('id_type') is not None:
+                save_type.save()
+                messages.success(request, 'Тип успешно изменён.')
+
+        if request.POST.get('render_request'):
+            return redirect('/')
+    else:
+        author_edit = AuthorEditForm()
+        author_form = AuthorForm()
+        tag_edit = TagEditForm()
+        tag_form = TagForm()
+        type_edit = TypeEditForm()
+        type_form = TypeNewForm()
+        check_author_form = False
+        check_tag_form = False
+        check_type_form = False
+        post_check = False
+        author_id = 1
+        tag_id = 1
+        type_id = 1
+    return render(request,'library/edit_additional_info.html', {'author_edit_form': author_edit,'check_author_form':check_author_form,'author_form':author_form,
+                                                                'tag_edit_form':tag_edit,'check_tag_form':check_tag_form,'tag_form':tag_form,
+                                                                'post_check':post_check,
+                                                                'type_edit_form':type_edit,'check_type_form':check_type_form,'type_form':type_form,
+                                                                'author_id':author_id,'type_id':type_id,'tag_id':tag_id})
+
 def is_date(string, fuzzy=False):
     """
     Return whether the string can be interpreted as a date.
@@ -43,7 +129,7 @@ def parse_file(filename):
   df1['Тэги'] = "-"
   df1.rename(columns={'возможна аннотация подумать':'Аннотация','ссылка на электронную версию книги':'Ссылка','Автор ':'Авторы','примечание':'Примечание','дата поступления':'Дата поступления'}, inplace = True)
 
-  types = ['словарь','сборник','препринт','периодическая литература','журнал','сборник статей','атлас','учебное пособие','каталог выставки','монография','путеводитель','метод. указания','тезисы докладов','отдельный оттиск','оттиск']
+  types = ['словарь','сборник','сборрник','препринт','периодическая литература','журнал','сборник статей','атлас','учебное пособие','каталог выставки','монография','путеводитель','метод. указания','тезисы докладов','отдельный оттиск','оттиск','справочник','путеводитель по выставке','методические рекомендации']
   df1 = df1.replace ( r'^\s\*$' , np.nan , regex= True )
   df1 = df1.fillna('-')
 
@@ -147,8 +233,10 @@ def upload_file(request):
             #if not handle_uploaded_file(name):
                 form.save()
                 files = ExcelImport.objects.latest('id')
-                print(files.id,'YTYTY')
+                #print(files.id,'YTYTY')
                 #print(f.file_excel.name,'popoperop',len(files))
+                #to pythonanywhere use
+                #books_df = parse_file('dvfumuseum.pythonanywhere.com/library/media/' + files.file_excel.name)
                 books_df = parse_file('library/media/' + files.file_excel.name)
                 for i in range(len(books_df)):
                     book_Model = Book()
@@ -156,7 +244,7 @@ def upload_file(request):
                     book_Model.annotation = books_df.at[i,'Аннотация']
                     book_Model.note = books_df.at[i,'Примечание']
                     if books_df.at[i,'Типы'] != '-':
-                        get_type, created = Type.objects.get_or_create(type=books_df.at[i,'Типы'])
+                        get_type, created = Type.objects.get_or_create(type=books_df.at[i,'Типы'].rstrip().lstrip())
                         book_Model.type = get_type
                     book_Model.save()
                     book_Storage = Storage()
@@ -164,7 +252,6 @@ def upload_file(request):
                     book_Storage.closet = books_df.at[i,'Шкаф']
                     book_Storage.shelf = books_df.at[i,'Полка']
                     book_Storage.user_id = request.user.id
-                    book_Storage.last_modified_time = timezone.now()
                     book_Storage.save()
                     book_Copy = Copy()
                     if "-" not in str(books_df.at[i,'Год издания']):
@@ -176,9 +263,8 @@ def upload_file(request):
                     book_Copy.save()
                     if str(books_df.at[i, 'Авторы']) != 'nan' and str(books_df.at[i, 'Авторы']) != '' and str(books_df.at[i, 'Авторы']) != '-':
                         authors_list = books_df.at[i, 'Авторы'].replace(' и ', ',').split(',')
-
-                        #print(len(authors_list),authors_list)
                         for i in range(len(authors_list)):
+                            authors_list[i] = authors_list[i].rstrip().lstrip()
                             get_author, created = Author.objects.get_or_create(name=authors_list[i])
                             book_BookAuthor = BookAuthor()
                             book_BookAuthor.author_id = get_author.id
@@ -191,6 +277,21 @@ def upload_file(request):
         form = UploadFileForm()
 
     return render(request, 'library/upload.html', {'form': form})
+
+def delete_type(request,pk):
+    Type.objects.filter(pk=pk).delete()
+    messages.success(request, 'Тип успешно удален.')
+    return redirect('/')
+
+def delete_tag(request,pk):
+    Tag.objects.filter(pk=pk).delete()
+    messages.success(request, 'Тэг успешно удален.')
+    return redirect('/')
+
+def delete_author(request,pk):
+    Author.objects.filter(pk=pk).delete()
+    messages.success(request, 'Автор успешно удален.')
+    return redirect('/')
 
 def delete_book(request,pk):
     Book.objects.filter(pk=pk).delete()
@@ -236,7 +337,7 @@ def get_book_detail(pk):
             AS(SELECT id,book_id,user_id,link, CONCAT_WS(" ",closet,shelf),last_modified_time FROM storage)
         
             SELECT book.id AS 'Номер',
-            authors_name AS 'Авторы',
+            IFNULL(authors_name,'-') AS 'Авторы',
             name_book AS 'Название',
             IFNULL(part,'-') AS 'Том',
             IFNULL(year,'-') AS 'Год Издания',
@@ -248,7 +349,8 @@ def get_book_detail(pk):
             IFNULL(mesto,'-') AS 'Расположение',
             IFNULL(link,'-') AS 'Ссылка',
             receipt_date AS 'Дата поступления',
-            username AS 'Пользователь'
+            first_name,
+            last_name
             FROM book
                 LEFT JOIN type ON book.type_id=type.id
                 LEFT JOIN get_authors ON book.id=get_authors.ID_Book
@@ -284,28 +386,32 @@ def edit_book(request, pk):
         formStorage = StorageForm(request.POST)
         formAuthor = AuthorBookForm(request.POST)
 
-        if author == 'undefined':
-            author=''
         if formBook.is_valid():
             book = formBook.save(commit=False)
             update_book.name_book = book.name_book
             update_book.annotation = book.annotation
             update_book.note = book.note
             if types is not None:
-                type_get, created = Type.objects.get_or_create(type=types[1:])
+                types = types[1:].rstrip().lstrip()
+                type_get, created = Type.objects.get_or_create(type=types)
                 update_book.type = type_get
             update_book.save()
         if author is not None:
             bookAuthor = BookAuthor.objects.filter(book_id=update_book.id)
-            for i in range(len(bookAuthor)):
-                bookAuthor[i].delete()
-            splitAuthors = author[1:].split(';')
-            for i in range(len(splitAuthors)):
-                author_get, created = Author.objects.get_or_create(name=splitAuthors[i])
-                set_bookAuthor = BookAuthor()
-                set_bookAuthor.book_id = update_book.id
-                set_bookAuthor.author_id = author_get.id
-                set_bookAuthor.save()
+            if author == 'undefined':
+                for i in range(len(bookAuthor)):
+                    print(bookAuthor[i],'FGFG')
+                    bookAuthor[i].delete()
+            else:
+                for i in range(len(bookAuthor)):
+                    bookAuthor[i].delete()
+                splitAuthors = author[1:].split(';')
+                for i in range(len(splitAuthors)):
+                    author_get, created = Author.objects.get_or_create(name=splitAuthors[i].rstrip().lstrip())
+                    set_bookAuthor = BookAuthor()
+                    set_bookAuthor.book_id = update_book.id
+                    set_bookAuthor.author_id = author_get.id
+                    set_bookAuthor.save()
         if formCopy.is_valid():
             bookCopy = Copy.objects.filter(book_id=update_book.id)
             for i in range(len(bookCopy)):
@@ -313,6 +419,7 @@ def edit_book(request, pk):
             copy = formCopy.save(commit=False)
             copy.book_id = update_book.id
             copy.save()
+            print(copy.receipt_date,'TRTRR')
         if formStorage.is_valid():
             bookStorage = Storage.objects.get(book_id=update_book.id)
             bookStorage.delete()
@@ -322,14 +429,14 @@ def edit_book(request, pk):
             storage.closet = bookStorage.closet
             storage.shelf = bookStorage.shelf
             storage.link = bookStorage.link
-            storage.last_modified_time = timezone.now()
             storage.save()
         messages.success(request, 'Книга успешно изменена.')
         return redirect('/')
     else:
+        print(type(copy[0].receipt_date),str(copy[0].receipt_date))
         formBook = BookForm(initial={'name_book': update_book.name_book,'annotation':update_book.annotation,'note':update_book.note})
         formAuthor = AuthorBookForm(initial={'author':authors})
-        formCopy = CopyForm(initial={'year':copy[0].year,'part':copy[0].part,'release':copy[0].release})
+        formCopy = CopyForm(initial={'year':copy[0].year,'part':copy[0].part,'release':copy[0].release,'receipt_date':str(copy[0].receipt_date)})
         formType = TypeForm(initial={'type':update_book.type})
         formStorage = StorageForm(initial={'closet':stor[0].closet,'shelf':stor[0].shelf,'link':stor[0].link})
         formBookTag = BookTagForm(initial={'tag':tags})
@@ -356,12 +463,14 @@ def add_book(request):
             messages.success(request, 'Новая книга успешно добавлена')
             set_tag = get_object_or_404(Book,pk=book.id)
             if types is not None:
-                type_get, created = Type.objects.get_or_create(type=types[1:])
+                types = types[1:].rstrip().lstrip()
+                type_get, created = Type.objects.get_or_create(type=types)
                 set_tag.type = type_get
                 set_tag.save()
             if author is not None:
                 splitAuthors = author[1:].split(';')
                 for i in range(len(splitAuthors)):
+                    splitAuthors[i] = splitAuthors[i].rstrip().lstrip()
                     author_get, created = Author.objects.get_or_create(name=splitAuthors[i])
                     set_bookAuthor = BookAuthor()
                     set_bookAuthor.book_id = book.id
@@ -375,11 +484,12 @@ def add_book(request):
                 storage = formStorage.save(commit=False)
                 storage.user_id = request.user.id
                 storage.book_id = book.id
-                storage.last_modified_time = timezone.now()
                 storage.save()
+                print(storage.last_modified_time)
             if tag is not None:
                 splitTags = tag[1:].split(';')
                 for i in range(len(splitTags)):
+                    splitTags[i] = splitTags[i].rstrip().lstrip()
                     tag_get, created = Tag.objects.get_or_create(tag=splitTags[i])
                     set_bookTag = BookTag()
                     set_bookTag.book_id = book.id
@@ -438,4 +548,5 @@ def grouped_tags_for_book():
 
 def info_about_books(request):
     all_books = all_info_about_books()
+
     return render(request, 'library/info_about_books.html', {'all_books': all_books})

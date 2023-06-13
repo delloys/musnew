@@ -40,6 +40,7 @@ def info_about_arts(request):
             q &= Q(ex_lead__name_ex_lead__icontains=lead_query)
         artefacts = artefacts.filter(q)
 
+
     # Сортировка
     sort_param = request.GET.get('sort', 'id')
     if sort_param:
