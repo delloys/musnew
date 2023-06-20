@@ -45,7 +45,7 @@
           {% if user.is_authenticated %}
             <li><a  class="nav-link px-2 link-secondary">Здравствуйте, <b>{{ user.first_name }} {{ user.last_name }}</b>!</a></li>
           {% endif %}
-        <li class="nav-item"><a href="{% url 'info_about_arts' %}" class="btn btn-outline-primary me-2" aria-current="page">Артефакты</a></li>
+        <li class="nav-item"><a href="{% url 'info_about_arts' %}" class="btn btn-outline-primary me-2" aria-current="page">Основные фонды</a></li>
         <li class="nav-item"><a href="{% url 'info_about_books' %}" class="btn btn-outline-primary me-2">Библиотека</a></li>
                 {% if user.is_authenticated %}
                         <li><a class="btn btn-outline-primary me-2" href="{% url 'logout' %}">Выйти</a></li>

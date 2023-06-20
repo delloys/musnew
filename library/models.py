@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class Tag(models.Model):
-    tag = models.CharField(max_length=45)
+    tag = models.CharField(max_length=150)
 
     class Meta:
         db_table = 'tag'

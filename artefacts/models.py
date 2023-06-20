@@ -25,13 +25,13 @@ class Ex_monument(models.Model):
 
 
 class Year_monument(models.Model):
-    year = models.DateField()
+    year = models.CharField(max_length=4)
 
     class Meta:
         db_table = 'year_monument'
 
     def __str__(self):
-        return self.year.strftime('%d.%m.%Y')
+        return str(self.year)
 
 
 class Material(models.Model):
@@ -50,7 +50,7 @@ class Culture(models.Model):
         db_table = 'culture'
 
     def __str__(self):
-        return self.name_cult
+        return str(self.name_cult)
 
 
 class Historical_period(models.Model):
@@ -132,7 +132,7 @@ class Artefact(models.Model):
     name_art = models.CharField(max_length=255, null=True)
     material = models.ForeignKey(Material, blank=True, null=True, on_delete=models.CASCADE, related_name='id_material')
     histcult = models.ForeignKey(HistoricalCulture, blank=True, null=True, on_delete=models.CASCADE, related_name='id_hist_cult')
-    age = models.PositiveBigIntegerField(blank=True, null=True)
+    age = models.CharField(max_length=30, blank=True, null=True)
     size = models.CharField(max_length=20, blank=True, null=True)
     ex_lead = models.ForeignKey(Ex_lead, on_delete=models.CASCADE, related_name='id_lead_ex')
     location = models.ForeignKey(HallPlace, on_delete=models.CASCADE, related_name='id_hall_place')

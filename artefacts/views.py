@@ -8,7 +8,8 @@ from datetime import datetime
 from .models import *
 
 
-
+def add_new_info(request):
+    return render(request,'artefacts/add_new_info.html')
 
 def info_about_arts(request):
     artefacts = Artefact.objects.all()
@@ -20,9 +21,6 @@ def info_about_arts(request):
     museum_query = request.GET.get('museum', '')
     year_query = request.GET.get('year', '')
     lead_query = request.GET.get('ex_lead', '')
-    if year_query:
-        date_obj = datetime.strptime(year_query, '%d.%m.%Y')
-        year_query = date_obj.strftime('%Y-%m-%d')
 
     if search_query or name_query or museum_query or year_query or uniq_query or lead_query:
         q = Q()
@@ -39,7 +37,6 @@ def info_about_arts(request):
         if lead_query:
             q &= Q(ex_lead__name_ex_lead__icontains=lead_query)
         artefacts = artefacts.filter(q)
-
 
     # Сортировка
     sort_param = request.GET.get('sort', 'id')
@@ -68,8 +65,6 @@ def edit_artefact(request, pk):
             form.save_m2m()
             messages.success(request, 'Артефакт успешно обновлен!')
             return redirect('artefact_detail', pk=artefact.pk)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         form = ArtefactEditForm(instance=artefact)
     return render(request, 'artefacts/edit_artefact.html', {'form': form, 'artefact': artefact})
@@ -80,10 +75,9 @@ def add_museum(request):
         if form.is_valid():
             museum = form.save()
             messages.success(request, 'Новый музей успешно добавлен!')
-            url = reverse('add_artefact') + '?museum={}'.format(museum.pk)
+            # url = reverse('add_artefact') + '?museum={}'.format(museum.pk)
+            url = reverse('add_museum')
             return redirect(url)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         museum_id = request.GET.get('museum')
         initial = {'name_mus': ''}
@@ -100,10 +94,9 @@ def add_material(request):
         if form.is_valid():
             material = form.save()
             messages.success(request, 'Новый материал успешно добавлен!')
-            url = reverse('add_artefact') + '?material={}'.format(material.pk)
+            # url = reverse('add_artefact') + '?material={}'.format(material.pk)
+            url = reverse('add_material')
             return redirect(url)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         material_id = request.GET.get('material')
         initial = {'name_mat': ''}
@@ -120,10 +113,9 @@ def add_ex_monument(request):
         if form.is_valid():
             monument = form.save()
             messages.success(request, 'Новый памятник успешно добавлен!')
-            url = reverse('add_artefact') + '?monument={}'.format(monument.pk)
+            # url = reverse('add_artefact') + '?monument={}'.format(monument.pk)
+            url = reverse('add_ex_monument')
             return redirect(url)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         monument_id = request.GET.get('monument')
         initial = {'name_ex': ''}
@@ -140,10 +132,9 @@ def add_ex_lead(request):
         if form.is_valid():
             lead = form.save()
             messages.success(request, 'Новый руководитель успешно добавлен!')
-            url = reverse('add_artefact') + '?lead={}'.format(lead.pk)
+            # url = reverse('add_artefact') + '?lead={}'.format(lead.pk)
+            url = reverse('add_ex_lead')
             return redirect(url)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         lead_id = request.GET.get('lead')
         initial = {'name_ex_lead': ''}
@@ -160,19 +151,57 @@ def add_year(request):
         if form.is_valid():
             year = form.save()
             messages.success(request, 'Новый год раскопок успешно добавлен!')
-            url = reverse('add_artefact') + '?year={}'.format(year.pk)
+            # url = reverse('add_artefact') + '?year={}'.format(year.pk)
+            url = reverse('add_year')
             return redirect(url)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         year_id = request.GET.get('year')
         initial = {'year': ''}
         if year_id:
             year = Year_monument.objects.get(pk=year_id)
-            initial['name_ex_lead'] = year.year
+            initial['year'] = year.year
         form = YearForm(initial=initial)
     return render(request, 'artefacts/add_list_with_context.html',{'form': form, 'context': context})
 
+# def add_artefact(request):
+#     if request.method == 'POST':
+#         form = ArtefactForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             artefact = form.save(commit=False)
+#             artefact.user_last_changes = request.user
+#             artefact.save()
+#             form.save_m2m()
+#
+#             messages.success(request, 'Новый артефакт успешно добавлен!')
+#             return redirect('artefact_detail', pk=artefact.pk)
+#     else:
+#         museum_id = request.GET.get('museum')
+#         material_id = request.GET.get('material')
+#         monument_id = request.GET.get('monument')
+#         lead_id = request.GET.get('lead')
+#         year_id = request.GET.get('year')
+#         histcult_id = request.GET.get('histcult')
+#         hallplace_id = request.GET.get('location')
+#
+#         initial = {}
+#         if museum_id:
+#             initial['museum'] = museum_id
+#         if material_id:
+#             initial['material'] = material_id
+#         if monument_id:
+#             initial['ex_monument'] = monument_id
+#         if lead_id:
+#             initial['ex_lead'] = lead_id
+#         if year_id:
+#             initial['year'] = year_id
+#         if histcult_id:
+#             initial['histcult'] = histcult_id
+#         if hallplace_id:
+#             initial['location'] = hallplace_id
+#
+#         form = ArtefactForm(initial=initial)
+#
+#     return render(request, 'artefacts/add_artefact.html', {'form': form})
 def add_artefact(request):
     if request.method == 'POST':
         form = ArtefactForm(request.POST, request.FILES)
@@ -184,36 +213,53 @@ def add_artefact(request):
 
             messages.success(request, 'Новый артефакт успешно добавлен!')
             return redirect('artefact_detail', pk=artefact.pk)
-        else:
-            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
-        museum_id = request.GET.get('museum')
-        material_id = request.GET.get('material')
-        monument_id = request.GET.get('monument')
-        lead_id = request.GET.get('lead')
-        year_id = request.GET.get('year')
-        histcult_id = request.GET.get('histcult')
-        hallplace_id = request.GET.get('location')
-
-        initial = {}
-        if museum_id:
-            initial['museum'] = museum_id
-        if material_id:
-            initial['material'] = material_id
-        if monument_id:
-            initial['ex_monument'] = monument_id
-        if lead_id:
-            initial['ex_lead'] = lead_id
-        if year_id:
-            initial['year'] = year_id
-        if histcult_id:
-            initial['histcult'] = histcult_id
-        if hallplace_id:
-            initial['location'] = hallplace_id
-
-        form = ArtefactForm(initial=initial)
-
+        form = ArtefactForm()
     return render(request, 'artefacts/add_artefact.html', {'form': form})
+# def add_artefact(request):
+#     if request.method == 'POST':
+#         form = ArtefactForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             artefact = form.save(commit=False)
+#             artefact.user_last_changes = request.user
+#             artefact.save()
+#             form.save_m2m()
+#             messages.success(request, 'Новый артефакт успешно добавлен!')
+#             request.session['form_data'] = None  # очищаем данные формы из сессии
+#             return redirect('artefact_detail', pk=artefact.pk)
+#         else:
+#             messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
+#             request.session['form_data'] = form.data.dict()  # сохраняем данные формы в сессию
+#     else:
+#         initial = {}
+#         # восстанавливаем данные формы из сессии
+#         form_data = request.session.get('form_data')
+#         if form_data:
+#             initial.update(form_data)  # добавляем новые значения в initial, не затирая старые
+#         else:
+#             museum_id = request.GET.get('museum')
+#             material_id = request.GET.get('material')
+#             monument_id = request.GET.get('monument')
+#             lead_id = request.GET.get('lead')
+#             year_id = request.GET.get('year')
+#             histcult_id = request.GET.get('histcult')
+#             hallplace_id = request.GET.get('location')
+#             if museum_id:
+#                 initial['museum'] = museum_id
+#             if material_id:
+#                 initial['material'] = material_id
+#             if monument_id:
+#                 initial['ex_monument'] = monument_id
+#             if lead_id:
+#                 initial['ex_lead'] = lead_id
+#             if year_id:
+#                 initial['year'] = year_id
+#             if histcult_id:
+#                 initial['histcult'] = histcult_id
+#             if hallplace_id:
+#                 initial['location'] = hallplace_id
+#         form = ArtefactForm(initial=initial)
+#     return render(request, 'artefacts/add_artefact.html', {'form': form})
 
 def add_hist_cult(request):
     culture_form = CultureForm()
@@ -230,20 +276,38 @@ def add_hist_cult(request):
             if culture_form.is_valid():
                 culture = culture_form.save()
                 culture_saved = True
+                url = reverse('add_hist_cult')
+                messages.success(request, 'Новая культура добавлена!')
+                return redirect(url)
+            else:
+                messages.error(request, 'Такая культура уже существует или вы ввели цифру!')
         elif 'save_period' in request.POST:
             period_form = HistoricalPeriodForm(request.POST)
 
             if period_form.is_valid():
                 period = period_form.save()
                 period_saved = True
+                url = reverse('add_hist_cult')
+                messages.success(request, 'Новый исторический период добавлен!')
+                return redirect(url)
+            else:
+                messages.error(request, 'Такой исторический период уже существует или вы ввели цифру!')
         elif 'save_hc' in request.POST:
             hc_form = HistoricalCultureForm(request.POST)
 
             if hc_form.is_valid():
-                hc = hc_form.save()
-                hc_saved = True
-                url = reverse('add_artefact') + '?histcult={}'.format(hc.pk)
-                return redirect(url)
+                hc = hc_form.save(commit=False)
+                # Проверяем, есть ли значение поля `name_cult`
+                if hc.name_cult_id and hc.name_hist_id:
+                    hc.save()
+                    hc_saved = True
+                    url = reverse('add_hist_cult')
+                    messages.success(request, 'Новая связь между культурой и историческим периодом добавлена!')
+                    return redirect(url)
+                else:
+                    messages.error(request, 'Пожалуйста, заполните поля для связи .')
+            else:
+                messages.error(request, 'Такая связь уже существует!')
     else:
         histcult_id = request.GET.get('histcult')
         initial = {'histcult': ''}
@@ -277,20 +341,38 @@ def add_hall_place(request):
             if hall_form.is_valid():
                 hall = hall_form.save()
                 hall_saved = True
+                url = reverse('add_hall_place')
+                messages.success(request, 'Новый зал добавлен!')
+                return redirect(url)
+            else:
+                messages.error(request, 'Такой зал существует!')
         elif 'save_place' in request.POST:
             place_form = PlaceForm(request.POST)
 
             if place_form.is_valid():
                 place = place_form.save()
                 place_saved = True
+                url = reverse('add_hall_place')
+                messages.success(request, 'Новое расположение добавлено!')
+                return redirect(url)
+            else:
+                messages.error(request, 'Такое расположение существует!')
         elif 'save_hp' in request.POST:
             hp_form = HallPlaceForm(request.POST)
 
             if hp_form.is_valid():
-                hp = hp_form.save()
-                hp_saved = True
-                url = reverse('add_artefact') + '?location={}'.format(hp.pk)
-                return redirect(url)
+                hp = hp_form.save(commit = False)
+                if hp.name_hall_id and hp.name_place_id:
+                    hp.save()
+                    hp_saved = True
+                    # url = reverse('add_artefact') + '?location={}'.format(hp.pk)
+                    url = reverse('add_hall_place')
+                    messages.success(request, 'Новая связь  между залом и расположением добавлена!')
+                    return redirect(url)
+                else:
+                    messages.error(request, 'Пожалуйста, заполните поля для связи .')
+            else:
+                messages.error(request, 'Такая связь существует!')
     else:
         hallplace_id = request.GET.get('location')
         initial = {'location': ''}

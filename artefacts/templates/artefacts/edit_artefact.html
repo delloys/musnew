@@ -42,18 +42,21 @@ function goBack() {
     {% csrf_token %}
         <div class="id_museum">
             <p class="form-field">Музей: {{ form.museum }}
-                <a href="{% url 'add_museum' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+<!--                <a href="{% url 'add_museum' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+            </p>
         </div>
          <div >
        <p class="form-field">Музейный номер: {{ form.number }}</p>
       </div>
       <div class="id_ex_monument">
        <p class="form-field">Название памятника: {{ form.ex_monument }}
-        <a href="{% url 'add_ex_monument' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+<!--        <a href="{% url 'add_ex_monument' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+       </p>
       </div>
       <div class="id_year">
         <p class="form-field">Год раскопок: {{ form.year }}
-        <a href="{% url 'add_year' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+<!--        <a href="{% url 'add_year' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+        </p>
       </div>
       <div>
         <p class="form-field"> Уникальный шифр: {{ form.uniq_name }}</p>
@@ -63,11 +66,13 @@ function goBack() {
       </div>
         <div class="id_material">
         <p class="form-field">Материал: {{ form.material }}
-        <a href="{% url 'add_material' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a> </p>
+<!--        <a href="{% url 'add_material' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+        </p>
       </div>
       <div class="id_histcult">
         <p class="form-field"> Исторический период и культура: {{ form.histcult }}
-        <a href="{% url 'add_hist_cult' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+<!--        <a href="{% url 'add_hist_cult' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+        </p>
       </div>
       <div >
         <p class="form-field"> Абсолютный возраст: {{ form.age }}</p>
@@ -77,11 +82,13 @@ function goBack() {
       </div>
       <div class="id_location">
         <p class="form-field">Расположение: {{ form.location }}
-        <a href="{% url 'add_hall_place' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a> </p>
+<!--        <a href="{% url 'add_hall_place' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a> -->
+        </p>
       </div>
       <div class="id_ex_lead">
           <p>Руководитель раскопок:{{ form.ex_lead }}
-        <a href="{% url 'add_ex_lead' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a></p>
+<!--        <a href="{% url 'add_ex_lead' %}" class="btn btn-outline-primary me-2 btn-sm py-0 px-1">+</a>-->
+          </p>
       </div>
        <div>
        <p class="form-field">Примечание:</p>  {{ form.note }}
@@ -90,7 +97,7 @@ function goBack() {
           <p class="form-field">Описание:</p> {{ form.description }}
       </div>
       <div>
-          <p class="form-field">Изображение: {{ form.image }}</p>
+<!--          <p class="form-field">Изображение: {{ form.image }}</p>-->
       </div>
       <hr>
     <button type="submit" class="btn btn-outline-primary">Сохранить</button>

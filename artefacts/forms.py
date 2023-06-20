@@ -2,7 +2,12 @@ from django import forms
 from datetime import datetime
 from .models import *
 from django.forms import Textarea
+from django.core.exceptions import ValidationError
 
+
+def validate_no_numbers(value):
+    if any(char.isdigit() for char in value):
+        raise ValidationError('Поле не должно содержать цифры.')
 class DescNoteTextarea(Textarea):
     def __init__(self, attrs=None):
         default_attrs = {'cols': 80, 'rows': 5}  # задаем размеры текстового поля
@@ -79,11 +84,11 @@ class MuseumForm(forms.ModelForm):
         return name_mus
 
 class MaterialForm(forms.ModelForm):
+    name_mat = forms.CharField(label='Название материала', validators=[validate_no_numbers])
     class Meta:
         model = Material
         fields = ['name_mat']
         labels = {
-            'Material': 'Материал',
             'name_mat': 'Название материала',
         }
 
@@ -114,6 +119,7 @@ class MonumentForm(forms.ModelForm):
         return name_ex
 
 class LeadForm(forms.ModelForm):
+    name_ex_lead = forms.CharField(label='Руководитель раскопок',validators=[validate_no_numbers])
     class Meta:
         model = Ex_lead
         fields = ['name_ex_lead']
@@ -148,15 +154,32 @@ class YearForm(forms.ModelForm):
         if Year_monument.objects.filter(year=year).exists():
             raise forms.ValidationError('Такой год уже есть в базе')
 
-        # Проверка, что дата не больше текущей даты
-        if year > datetime.now().date():
-            raise forms.ValidationError('Дата не может быть больше текущей')
-
-        return year
-
+# class CultureForm(forms.ModelForm):
+#     name_cult = forms.CharField(validators=[validate_no_numbers])
+#
+#     class Meta:
+#         model = Culture
+#         fields = ['name_cult']
+#         labels = {
+#             'name_cult': 'Культура',
+#         }
+#
+#     def clean_name_cult(self):
+#         """
+#         Проверка на уникальность значения поля `name_cult`
+#         """
+#         name_cult = self.cleaned_data.get('name_cult')
+#         if Culture.objects.filter(name_cult=name_cult).exists():
+#             self.add_error('name_cult', 'Такая культура уже существует в базе')
+#         return name_cult
+#
+#
+# def validate_no_numbers(value):
+#         if any(char.isdigit() for char in value):
+#             raise ValidationError('Поле не должно содержать цифры.')
 
 class CultureForm(forms.ModelForm):
-    name_cult = forms.CharField()
+    name_cult = forms.CharField(validators=[validate_no_numbers])
 
     class Meta:
         model = Culture
@@ -164,19 +187,18 @@ class CultureForm(forms.ModelForm):
         labels = {
             'name_cult': 'Культура',
         }
-
     def clean_name_cult(self):
-            """
-            Проверка на уникальность значения поля `name_cult`
-            """
-            name_cult = self.cleaned_data.get('name_cult')
-            if Culture.objects.filter(name_cult=name_cult).exists():
-                raise forms.ValidationError('Такая культура уже существует в базе')
-            return name_cult
+        """
+        Проверка на уникальность значения поля `name_cult`
+        """
+        name_cult = self.cleaned_data.get('name_cult')
+        if Culture.objects.filter(name_cult=name_cult).exists():
+            self.add_error('name_cult', 'Такая культура уже существует в базе')
+        return name_cult
 
 # Форма для заполнения таблицы Historical_period
 class HistoricalPeriodForm(forms.ModelForm):
-    name_hist = forms.CharField()
+    name_hist = forms.CharField(validators=[validate_no_numbers])
 
     class Meta:
         model = Historical_period
@@ -215,7 +237,6 @@ class HistoricalCultureForm(forms.ModelForm):
         if name_cult and name_hist:
             if HistoricalCulture.objects.filter(name_cult=name_cult, name_hist=name_hist).exists():
                 raise forms.ValidationError('Такая связь между культурой и историческим периодом уже существует.')
-
         return cleaned_data
 
 class HallForm(forms.ModelForm):

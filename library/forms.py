@@ -86,6 +86,7 @@ class UploadFileForm(forms.ModelForm):
     class Meta:
         model = ExcelImport
         fields = ('file_excel',)
+        labels = {'file_excel': 'Файл'}
 
 class StorageForm(forms.ModelForm):
 

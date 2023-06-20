@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+<head>
+    <meta charset="UTF-8">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/artefacts.css">
+    {% block title %}
+        <title>Обновление справочников</title>
+    {% endblock %}
+
+</head>
+<body>
+ {% block content %}
+ <div class="container py-5" >
+     <h1>Добавить новые данные в справочники:</h1>
+<hr>
+<a href="{% url 'add_museum' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новый музей</a></p>
+<a href="{% url 'add_ex_monument' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новый памятник</a></p>
+<a href="{% url 'add_year' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новый год раскопок</a></p>
+<a href="{% url 'add_material' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новый материал</a></p>
+<a href="{% url 'add_hist_cult' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новый исторический период</a></p>
+<a href="{% url 'add_hall_place' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить новое месторасположение артефакта в музее</a></p>
+<a href="{% url 'add_ex_lead' %}" class="btn btn-outline-primary me-2  py-0 px-1">Добавить нового руководителя раскопок</a></p>
+<hr>
+<a  href="{% url 'info_about_arts' %}" class="btn btn-outline-primary ">Отмена</a>
+ </div>
+ {% endblock %}
+</body>
+</html>

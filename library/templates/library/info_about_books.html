@@ -43,11 +43,20 @@
     </div>
     <hr>
     {% if messages %}
-    <div id="message" class="alert alert-success">
+        <div id='message'>
         {% for message in messages %}
-        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>  </p>
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="alert alert-warning">
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endif %}
         {% endfor %}
-    </div>
+            </div>
     {% endif %}
    <table class="table table-hover" id="info-table">
       <thead onclick="getSort(event)">

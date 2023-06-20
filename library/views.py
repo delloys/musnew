@@ -461,7 +461,7 @@ def add_book(request):
         if formBook.is_valid():
             book = formBook.save(commit=False)
             book.save()
-            messages.success(request, 'Новая книга успешно добавлена')
+
             set_tag = get_object_or_404(Book,pk=book.id)
             if types is not None:
                 types = types[1:].rstrip().lstrip()
@@ -481,12 +481,16 @@ def add_book(request):
                 copy = formCopy.save(commit=False)
                 copy.book_id = book.id
                 copy.save()
+            else:
+                messages.warning(request, 'Некорректные данные в одном из следующих полей: Год издания, Часть, Выпуск или Дата поступления. Пожалуйста, проверьте правильность данных.')
             if formStorage.is_valid():
                 storage = formStorage.save(commit=False)
                 storage.user_id = request.user.id
                 storage.book_id = book.id
                 storage.save()
                 print(storage.last_modified_time)
+            else:
+                messages.warning(request,'Некорректные данные в одном из следующих полей: Шкаф, Полка, Ссылка. Пожалуйста, проверьте правильность данных.')
             if tag is not None:
                 splitTags = tag[1:].split(';')
                 for i in range(len(splitTags)):
@@ -496,6 +500,7 @@ def add_book(request):
                     set_bookTag.book_id = book.id
                     set_bookTag.tag_id = tag_get.id
                     set_bookTag.save()
+            messages.success(request, 'Новая книга успешно добавлена')
         else:
             messages.success(request, 'Книга не добавлена.')
         return redirect('/')

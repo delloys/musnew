@@ -1,47 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 <head>
     <meta charset="UTF-8">
-    <title>{{context}}</title>
-    <link href ="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
-    <link rel="stylesheet" href ="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/artefacts.css">
+    {% block title %}
+        <title>{{context}}</title>
+    {% endblock %}
 </head>
 <body>
-<script>
-function goBack() {
-  var url = "{% url 'add_artefact' %}";
-  window.location.href = url;
-}
-</script>
-
+ {% block content %}
+ <div class="container py-5" >
 <h1>{{context}}:</h1>
+<hr>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% if context == 'Добавить новый год раскопок' %}
-    <p><label for="year_id">Дата раскопок:</label> <input type="date" id="year_id" name="year"></p>
-    <button type="submit" class="btn btn-outline-primary">Сохранить</button>
-    <button type="button" onclick="goBack()" class="btn btn-outline-primary">Назад</button>
-    {% else %}
     <p>{{ form.as_p }}</p>
     <button type="submit" class="btn btn-outline-primary">Сохранить</button>
-    <a  href="{% url 'add_artefact' %}" class="btn btn-outline-primary">Назад</a>
-    {% endif %}
+    <a  href="{% url 'add_new_info' %}" class="btn btn-outline-primary">Назад</a>
   </form>
+ {% if form.errors %}
+  <div class="alert alert-danger">
+    {% for field in form %}
+      {% if field.errors %}
+        <ul>
+          {% for error in field.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if messages %}
+  <div class="alert alert-success">
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      {% for field in form %}
-        {% if field.errors %}
-          <ul>
-            {% for error in field.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      {% endfor %}
-    </div>
-  {% endif %}
+{% endblock %}
 </body>
 </html>

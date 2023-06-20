@@ -18,6 +18,7 @@
         searching: false, // отключает поиск
         ordering: true, // включает сортировку
         paging: true, // включает пагинацию
+        // pageLength: 25, // показывать 25 записей на странице
            columnDefs: [
       { type: 'num', targets: 0 } // указываем, что первый столбец должен быть отсортирован как числа
     ]
@@ -29,10 +30,15 @@
             document.getElementById('message').style.display = 'none';
         }, 5000);
     </script>
+    <style>
+        .search-form input[type="text"], .search-form button {
+  vertical-align: middle;
+}
+    </style>
 <!--   Тест окна -->
  <div class="container py-5" >
      <h4>Поиск</h4>
-     <form method="get">
+     <form method="get" class="search-form">
     <input type="text" name="museum" placeholder="Музей">
     <input type="text" name="ex_monument" placeholder="Название памятника">
     <input type="text" name="year" placeholder="Дата раскопок">
@@ -42,7 +48,8 @@
     <button type="submit" class="btn btn-outline-primary btn-sm">Искать</button>
 </form>
      <hr>
-    <p><a class="btn btn-outline-primary me-2" href="{% url 'add_artefact' %}">Добавить артефакт</a></p>
+    <p><a class="btn btn-outline-primary me-2" href="{% url 'add_artefact' %}">Добавить артефакт</a>
+     <a class="btn btn-outline-primary me-2" href="{% url 'add_new_info' %}">Добавить новые данные в справочники</a></p>
     <hr>
     {% if messages %}
     <div id="message" class="alert alert-success">

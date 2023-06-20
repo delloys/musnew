@@ -16,4 +16,5 @@ urlpatterns = [
     path('add_hall_place/', login_required(views.add_hall_place), name='add_hall_place'),
     path('artefacts/edit/<int:pk>/', login_required(views.edit_artefact), name='edit_artefact'),
     path('artefact/<int:pk>/delete/', login_required(views.delete_artefact), name='delete_artefact'),
+    path('add_new_info/',login_required(views.add_new_info),name='add_new_info'),
 ]
