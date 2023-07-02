@@ -3,7 +3,8 @@ from datetime import datetime
 from .models import *
 from django.forms import Textarea
 from django.core.exceptions import ValidationError
-
+from datetime import datetime
+from django.forms.widgets import FileInput, ClearableFileInput
 
 def validate_no_numbers(value):
     if any(char.isdigit() for char in value):
@@ -54,7 +55,6 @@ class ArtefactForm(forms.ModelForm):
         return number
 
 class ArtefactEditForm(forms.ModelForm):
-
     class Meta:
         model = Artefact
         fields = ('museum', 'ex_monument', 'year', 'uniq_name', 'number', 'name_art', 'material', 'histcult', 'age', 'size', 'ex_lead', 'location', 'description', 'note', 'image')
@@ -63,7 +63,8 @@ class ArtefactEditForm(forms.ModelForm):
         widgets = {'number': forms.TextInput(attrs={'readonly': 'readonly'}),
                    'uniq_name': forms.TextInput(attrs={'readonly': 'readonly'}),
                    'note': DescNoteTextarea(),
-                   'description' : DescNoteTextarea()
+                   'description' : DescNoteTextarea(),
+                   'image': ClearableFileInput(attrs={'clearable': True}),
          }
 class MuseumForm(forms.ModelForm):
     class Meta:
@@ -137,7 +138,44 @@ class LeadForm(forms.ModelForm):
             raise forms.ValidationError('Такой руководитель уже существует в базе')
         return name_ex_lead
 
+# class YearForm(forms.ModelForm):
+#     class Meta:
+#         model = Year_monument
+#         fields = ['year']
+#         labels = {
+#             'year': 'Год раскопок',
+#         }
+#
+#     def clean_year(self):
+#         """
+#         Проверка на уникальность значения поля `year`
+#         и на то, что дата не больше текущей даты
+#         """
+#         year = self.cleaned_data.get('year')
+#         if Year_monument.objects.filter(year=year).exists():
+#             raise forms.ValidationError('Такой год уже есть в базе')
+
+# class YearForm(forms.ModelForm):
+#     year = forms.IntegerField(label='Год раскопок', required=False)
+#
+#     class Meta:
+#         model = Year_monument
+#         fields = ['year']
+#         labels = {
+#             'year': 'Год раскопок',
+#         }
+#
+#     def clean_year(self):
+#         year = self.cleaned_data.get('year')
+#         if not year:
+#             return None
+#         if Year_monument.objects.filter(year=year).exists():
+#             raise forms.ValidationError('Такой год уже есть в базе')
+#         return year
+
 class YearForm(forms.ModelForm):
+    year = forms.IntegerField(label='Год раскопок', required=False)
+
     class Meta:
         model = Year_monument
         fields = ['year']
@@ -146,14 +184,15 @@ class YearForm(forms.ModelForm):
         }
 
     def clean_year(self):
-        """
-        Проверка на уникальность значения поля `year`
-        и на то, что дата не больше текущей даты
-        """
         year = self.cleaned_data.get('year')
+        if not year:
+            return None
+        current_year = datetime.now().year
+        if year > current_year:
+            raise forms.ValidationError('Год не может быть больше текущего года')
         if Year_monument.objects.filter(year=year).exists():
             raise forms.ValidationError('Такой год уже есть в базе')
-
+        return year
 # class CultureForm(forms.ModelForm):
 #     name_cult = forms.CharField(validators=[validate_no_numbers])
 #

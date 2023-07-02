@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+    {% block title %}
+    <title>Вход</title>
+    {% endblock %}
 
 {% block content %}
 
@@ -9,7 +12,7 @@
     <div class="col">
         <div class="text-center">
 {% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
+  <p>Ваше имя пользователя и пароль не совпадают. Пожалуйста, попробуйте еще раз.</p>
 {% endif %}
 
 {% if next %}

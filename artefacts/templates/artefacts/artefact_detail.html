@@ -49,10 +49,12 @@
     </div>
 <div class="column-2">
     <div class="column-content">
-         {% if artefact.image %}
+         {% if artefact.image != artefact.uniq_name%}
+            {% if artefact.image %}
   <p><strong>Изображение:</strong></p>
-  <p><img src="../../static/{{ artefact.image }}" height="166" width="262"/></p>
-{% endif %}
+  <p><img src="../../../library/media/{{ artefact.image }}" height="211" width="321"/></p>
+            {% endif %}
+        {% endif %}
 <p><strong>Описание:</strong> <div class="description">{{ artefact.description }}</div></p>
 <p><strong>Расположение:</strong> {{ artefact.location }}</p>
         <p><strong>Дата последнего изменения:</strong> <div class="description">{{ artefact.last_modified.date }} </div></p>

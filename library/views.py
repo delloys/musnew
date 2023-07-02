@@ -368,6 +368,7 @@ def edit_book(request, pk):
     update_book = get_object_or_404(Book, pk=pk)
     authors = Author.objects.filter(ba_id_author__book=update_book.id)
     tags = Tag.objects.filter(bt_id_tag__book=update_book.id)
+    title = update_book.name_book
 
     if Storage.objects.filter(book=update_book.id).exists():
         stor = Storage.objects.filter(book=update_book.id)
@@ -387,6 +388,8 @@ def edit_book(request, pk):
         formStorage = StorageForm(request.POST)
         formAuthor = AuthorBookForm(request.POST)
 
+        print(tag,'TAGS',len(tags),types)
+
         if formBook.is_valid():
             book = formBook.save(commit=False)
             update_book.name_book = book.name_book
@@ -397,6 +400,19 @@ def edit_book(request, pk):
                 type_get, created = Type.objects.get_or_create(type=types)
                 update_book.type = type_get
             update_book.save()
+        if tag is not None:
+            bookTag = BookTag.objects.filter(book_id=update_book.id)
+            for i in range(len(bookTag)):
+                bookTag[i].delete()
+            splitTags = tag[1:].split(';')
+            for i in range(len(splitTags)):
+                tag_get, created = Tag.objects.get_or_create(tag=splitTags[i].rstrip().lstrip())
+                print(tag_get)
+                set_bookTag = BookTag()
+                set_bookTag.book_id = update_book.id
+                set_bookTag.tag_id = tag_get.id
+                set_bookTag.save()
+                print(set_bookTag,'SETBOKTAG')
         if author is not None:
             bookAuthor = BookAuthor.objects.filter(book_id=update_book.id)
             if author == 'undefined':
@@ -441,7 +457,7 @@ def edit_book(request, pk):
         formType = TypeForm(initial={'type':update_book.type})
         formStorage = StorageForm(initial={'closet':stor[0].closet,'shelf':stor[0].shelf,'link':stor[0].link})
         formBookTag = BookTagForm(initial={'tag':tags})
-    return render(request, 'library/edit_book.html',{'formBook': formBook,'formAuthor': formAuthor,'formCopy':formCopy,'formStorage':formStorage, 'formBookTag': formBookTag,'formType':formType})
+    return render(request, 'library/edit_book.html',{'formBook': formBook,'formAuthor': formAuthor,'formCopy':formCopy,'formStorage':formStorage, 'formBookTag': formBookTag,'formType':formType,'title':title})
 
 #Информация об одной книге
 def detail_book(request,pk):

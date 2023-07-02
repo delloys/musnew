@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.urls import reverse
 from datetime import datetime
 from .models import *
+import os
 
 
 def add_new_info(request):
@@ -68,6 +69,8 @@ def edit_artefact(request, pk):
     else:
         form = ArtefactEditForm(instance=artefact)
     return render(request, 'artefacts/edit_artefact.html', {'form': form, 'artefact': artefact})
+
+
 def add_museum(request):
     context = "Добавить музей"
     if request.method == 'POST':
@@ -163,45 +166,6 @@ def add_year(request):
         form = YearForm(initial=initial)
     return render(request, 'artefacts/add_list_with_context.html',{'form': form, 'context': context})
 
-# def add_artefact(request):
-#     if request.method == 'POST':
-#         form = ArtefactForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             artefact = form.save(commit=False)
-#             artefact.user_last_changes = request.user
-#             artefact.save()
-#             form.save_m2m()
-#
-#             messages.success(request, 'Новый артефакт успешно добавлен!')
-#             return redirect('artefact_detail', pk=artefact.pk)
-#     else:
-#         museum_id = request.GET.get('museum')
-#         material_id = request.GET.get('material')
-#         monument_id = request.GET.get('monument')
-#         lead_id = request.GET.get('lead')
-#         year_id = request.GET.get('year')
-#         histcult_id = request.GET.get('histcult')
-#         hallplace_id = request.GET.get('location')
-#
-#         initial = {}
-#         if museum_id:
-#             initial['museum'] = museum_id
-#         if material_id:
-#             initial['material'] = material_id
-#         if monument_id:
-#             initial['ex_monument'] = monument_id
-#         if lead_id:
-#             initial['ex_lead'] = lead_id
-#         if year_id:
-#             initial['year'] = year_id
-#         if histcult_id:
-#             initial['histcult'] = histcult_id
-#         if hallplace_id:
-#             initial['location'] = hallplace_id
-#
-#         form = ArtefactForm(initial=initial)
-#
-#     return render(request, 'artefacts/add_artefact.html', {'form': form})
 def add_artefact(request):
     if request.method == 'POST':
         form = ArtefactForm(request.POST, request.FILES)
@@ -216,50 +180,7 @@ def add_artefact(request):
     else:
         form = ArtefactForm()
     return render(request, 'artefacts/add_artefact.html', {'form': form})
-# def add_artefact(request):
-#     if request.method == 'POST':
-#         form = ArtefactForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             artefact = form.save(commit=False)
-#             artefact.user_last_changes = request.user
-#             artefact.save()
-#             form.save_m2m()
-#             messages.success(request, 'Новый артефакт успешно добавлен!')
-#             request.session['form_data'] = None  # очищаем данные формы из сессии
-#             return redirect('artefact_detail', pk=artefact.pk)
-#         else:
-#             messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
-#             request.session['form_data'] = form.data.dict()  # сохраняем данные формы в сессию
-#     else:
-#         initial = {}
-#         # восстанавливаем данные формы из сессии
-#         form_data = request.session.get('form_data')
-#         if form_data:
-#             initial.update(form_data)  # добавляем новые значения в initial, не затирая старые
-#         else:
-#             museum_id = request.GET.get('museum')
-#             material_id = request.GET.get('material')
-#             monument_id = request.GET.get('monument')
-#             lead_id = request.GET.get('lead')
-#             year_id = request.GET.get('year')
-#             histcult_id = request.GET.get('histcult')
-#             hallplace_id = request.GET.get('location')
-#             if museum_id:
-#                 initial['museum'] = museum_id
-#             if material_id:
-#                 initial['material'] = material_id
-#             if monument_id:
-#                 initial['ex_monument'] = monument_id
-#             if lead_id:
-#                 initial['ex_lead'] = lead_id
-#             if year_id:
-#                 initial['year'] = year_id
-#             if histcult_id:
-#                 initial['histcult'] = histcult_id
-#             if hallplace_id:
-#                 initial['location'] = hallplace_id
-#         form = ArtefactForm(initial=initial)
-#     return render(request, 'artefacts/add_artefact.html', {'form': form})
+
 
 def add_hist_cult(request):
     culture_form = CultureForm()

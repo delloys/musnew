@@ -1,6 +1,8 @@
 from django.urls import path, include
 from . import views
 from django.contrib.auth.decorators import login_required
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', login_required(views.info_about_books), name='info_about_books'),
@@ -15,4 +17,4 @@ urlpatterns = [
     path('type/<int:pk>/delete/',login_required(views.delete_type),name='delete_type'),
     path('tag/<int:pk>/delete/',login_required(views.delete_tag),name='delete_tag'),
     path('help/',login_required(views.help_render),name='help'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,6 +2,7 @@ import os
 from django.conf import settings
 from django.db import models
 from django.utils.deconstruct import deconstructible
+from django.core.files.storage import default_storage
 
 
 # Create your models here.
@@ -31,7 +32,7 @@ class Year_monument(models.Model):
         db_table = 'year_monument'
 
     def __str__(self):
-        return str(self.year)
+        return self.year
 
 
 class Material(models.Model):
@@ -50,7 +51,7 @@ class Culture(models.Model):
         db_table = 'culture'
 
     def __str__(self):
-        return str(self.name_cult)
+        return self.name_cult
 
 
 class Historical_period(models.Model):
@@ -150,13 +151,13 @@ class Artefact(models.Model):
         return str(self.id) +" | " + str(self.uniq_name)
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            # создание нового объекта
-            if self.image:
-                self.image.name = '{}{}'.format(self.uniq_name, os.path.splitext(self.image.name)[1])
-        else:
+        if self.pk is not None:
             # обновление существующего объекта
             old_obj = Artefact.objects.get(pk=self.pk)
             if old_obj.image.name != self.image.name:
-                self.image.name = '{}{}'.format(self.uniq_name, os.path.splitext(self.image.name)[1])
+                # Удаление старого файла
+                if old_obj.image:
+                    default_storage.delete(old_obj.image.name)
+
+        # сохранение объекта, включая изменения в поле image
         super(Artefact, self).save(*args, **kwargs)
